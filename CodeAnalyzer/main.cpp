@@ -3,6 +3,8 @@
 
 int main(int argc, char *argv[])
 {
+    qRegisterMetaType<FolderInfoPointer>();
+
     QApplication a(argc, argv);
     MainWindow w;
     w.show();

@@ -2,6 +2,8 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QThread>
+#include "FolderProcessor.h"
 
 namespace Ui {
 class MainWindow;
@@ -15,8 +17,14 @@ public:
     explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
+public slots:
+    void openClicked();
+    void updateFolderInfo(FolderInfoPointer info);
+
 private:
     Ui::MainWindow *ui;
+    FolderProcessor processor;
+    QThread processingThread;
 };
 
 #endif // MAINWINDOW_H
