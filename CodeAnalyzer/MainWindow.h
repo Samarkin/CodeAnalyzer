@@ -19,6 +19,7 @@ public:
 
 public slots:
     void openClicked();
+    void indicateProcessing();
     void updateFolderInfo(FolderInfoPointer info);
 
 private:

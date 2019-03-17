@@ -14,6 +14,8 @@ MainWindow::MainWindow(QWidget *parent) :
     processor.moveToThread(&processingThread);
     connect(&processor, SIGNAL(doneProcessing(FolderInfoPointer)),
             this, SLOT(updateFolderInfo(FolderInfoPointer)));
+    connect(&processor, SIGNAL(startingProcessing(QString)),
+            this, SLOT(indicateProcessing()));
     processingThread.start();
 }
 
@@ -23,9 +25,13 @@ void MainWindow::openClicked()
     dialog.setFileMode(QFileDialog::Directory);
     if (dialog.exec())
     {
-        ui->statusBar->showMessage(tr("Analyzing..."));
         QMetaObject::invokeMethod(&processor, "process", Q_ARG(QString, dialog.selectedFiles()[0]));
     }
+}
+
+void MainWindow::indicateProcessing()
+{
+    ui->statusBar->showMessage(tr("Analyzing..."));
 }
 
 void MainWindow::updateFolderInfo(FolderInfoPointer info)

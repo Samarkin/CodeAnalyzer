@@ -4,6 +4,7 @@
 
 void FolderProcessor::process(const QString folderPath)
 {
+    emit startingProcessing(folderPath);
     FolderInfoPointer info{new FolderInfo};
     QDir folder{folderPath};
     QDirIterator it{folder, QDirIterator::Subdirectories};
