@@ -12,8 +12,8 @@ MainWindow::MainWindow(QWidget *parent) :
             this, SLOT(openClicked()));
 
     processor.moveToThread(&processingThread);
-    connect(&processor, SIGNAL(doneProcessing(FolderInfoPointer)),
-            this, SLOT(updateFolderInfo(FolderInfoPointer)));
+    connect(&processor, SIGNAL(doneProcessing(FolderInfo)),
+            this, SLOT(updateFolderInfo(FolderInfo)));
     connect(&processor, SIGNAL(startingProcessing(QString)),
             this, SLOT(indicateProcessing()));
     processingThread.start();
@@ -34,7 +34,7 @@ void MainWindow::indicateProcessing()
     ui->statusBar->showMessage(tr("Analyzing..."));
 }
 
-void MainWindow::updateFolderInfo(FolderInfoPointer info)
+void MainWindow::updateFolderInfo(FolderInfo info)
 {
     ui->statusBar->clearMessage();
     QMessageBox::information(this, tr("Done"), tr("I scanned %1 and found %2 files").arg(info->folderPath).arg(info->totalFiles));

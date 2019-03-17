@@ -13,7 +13,7 @@ public slots:
 
 signals:
     void startingProcessing(const QString folderPath);
-    void doneProcessing(FolderInfoPointer info);
+    void doneProcessing(FolderInfo info);
 };
 
 #endif // FOLDERPROCESSOR_H

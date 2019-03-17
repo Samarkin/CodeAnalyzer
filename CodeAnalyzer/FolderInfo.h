@@ -5,20 +5,20 @@
 #include <QMetaType>
 #include <QString>
 
-class FolderInfo;
+class FolderInfoData;
 
-typedef QSharedDataPointer<FolderInfo> FolderInfoPointer;
-Q_DECLARE_METATYPE(FolderInfoPointer);
+typedef QSharedDataPointer<FolderInfoData> FolderInfo;
+Q_DECLARE_METATYPE(FolderInfo);
 
-class FolderInfo : public QSharedData
+class FolderInfoData : public QSharedData
 {
 public:
-    FolderInfo()
+    FolderInfoData()
         : totalFiles(0)
     {
     }
 
-    FolderInfo(const FolderInfo& other)
+    FolderInfoData(const FolderInfoData& other)
         : QSharedData(other), folderPath(other.folderPath), totalFiles(other.totalFiles)
     {
     }

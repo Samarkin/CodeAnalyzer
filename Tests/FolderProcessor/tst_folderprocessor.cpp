@@ -16,7 +16,7 @@ private:
 
 void FolderProcessorTests::initTestCase()
 {
-    qRegisterMetaType<FolderInfoPointer>();
+    qRegisterMetaType<FolderInfo>();
 
     QVERIFY2(dir.isValid(), "Failed to create temporary directory: ");
 
@@ -32,7 +32,7 @@ void FolderProcessorTests::initTestCase()
 void FolderProcessorTests::count_files()
 {
     FolderProcessor processor;
-    QSignalSpy spy{&processor, SIGNAL(doneProcessing(FolderInfoPointer))};
+    QSignalSpy spy{&processor, SIGNAL(doneProcessing(FolderInfo))};
     QString dirPath = dir.path();
 
     processor.process(dirPath);
@@ -40,7 +40,7 @@ void FolderProcessorTests::count_files()
     QCOMPARE(spy.count(), 1);
     auto arguments = spy.takeFirst();
     QCOMPARE(arguments.at(0).type(), QVariant::UserType);
-    FolderInfoPointer result = qvariant_cast<FolderInfoPointer>(arguments.at(0));
+    FolderInfo result = qvariant_cast<FolderInfo>(arguments.at(0));
 
     QCOMPARE(result->folderPath, dirPath);
     QCOMPARE(result->totalFiles, 2);

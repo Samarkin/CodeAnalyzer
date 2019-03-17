@@ -20,7 +20,7 @@ public:
 public slots:
     void openClicked();
     void indicateProcessing();
-    void updateFolderInfo(FolderInfoPointer info);
+    void updateFolderInfo(FolderInfo info);
 
 private:
     Ui::MainWindow *ui;

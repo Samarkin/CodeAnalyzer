@@ -3,7 +3,7 @@
 
 int main(int argc, char *argv[])
 {
-    qRegisterMetaType<FolderInfoPointer>();
+    qRegisterMetaType<FolderInfo>();
 
     QApplication a(argc, argv);
     MainWindow w;
