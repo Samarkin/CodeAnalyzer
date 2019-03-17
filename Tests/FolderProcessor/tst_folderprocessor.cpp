@@ -11,29 +11,22 @@ private slots:
     void count_files();
 
 private:
-    QTemporaryDir dir;
+    QDir dir{QFINDTESTDATA("TestData")};
 };
 
 void FolderProcessorTests::initTestCase()
 {
     qRegisterMetaType<FolderInfo>();
 
-    QVERIFY2(dir.isValid(), "Failed to create temporary directory: ");
-
-    QFile prFile{dir.filePath("Hello.csproj")};
-    prFile.open(QFile::WriteOnly);
-    prFile.write("One-line ASCII file");
-
-    QFile srcFile1{dir.filePath("Main.cs")};
-    srcFile1.open(QFile::WriteOnly);
-    srcFile1.write("Multi-line\nfile\nwith\nunix line-endings\nand a trailing endline");
+    QVERIFY2(dir.exists(), "Failed to find test data");
 }
 
 void FolderProcessorTests::count_files()
 {
     FolderProcessor processor;
     QSignalSpy spy{&processor, SIGNAL(doneProcessing(FolderInfo))};
-    QString dirPath = dir.path();
+    QString dirPath = dir.filePath("CSharp");
+    QVERIFY(QDir(dirPath).exists());
 
     processor.process(dirPath);
 
@@ -43,12 +36,14 @@ void FolderProcessorTests::count_files()
     FolderInfo result = qvariant_cast<FolderInfo>(arguments.at(0));
 
     QCOMPARE(result->folderPath, dirPath);
-    QCOMPARE(result->filesByExt.keys().count(), 2);
+    QCOMPARE(result->filesByExt.keys().count(), 3);
     QVERIFY(result->filesByExt.contains("csproj"));
     QCOMPARE(result->filesByExt.value("csproj"), 1);
     QVERIFY(result->filesByExt.contains("cs"));
-    QCOMPARE(result->filesByExt.value("cs"), 1);
-    QCOMPARE(result->totalFiles, 2);
+    QCOMPARE(result->filesByExt.value("cs"), 2);
+    QVERIFY(result->filesByExt.contains("dll"));
+    QCOMPARE(result->filesByExt.value("dll"), 1);
+    QCOMPARE(result->totalFiles, 4);
 }
 
 QTEST_APPLESS_MAIN(FolderProcessorTests)
