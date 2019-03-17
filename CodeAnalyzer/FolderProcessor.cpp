@@ -12,9 +12,12 @@ void FolderProcessor::process(const QString folderPath)
     while (it.hasNext())
     {
         it.next();
-        if (it.fileInfo().isFile()) {
+        QFileInfo fileInfo = it.fileInfo();
+        if (fileInfo.isFile()) {
             info->totalFiles++;
+            info->filesByExt[fileInfo.suffix()]++;
         }
+
     }
     emit doneProcessing(info);
 }

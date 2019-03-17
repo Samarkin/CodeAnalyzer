@@ -43,6 +43,11 @@ void FolderProcessorTests::count_files()
     FolderInfo result = qvariant_cast<FolderInfo>(arguments.at(0));
 
     QCOMPARE(result->folderPath, dirPath);
+    QCOMPARE(result->filesByExt.keys().count(), 2);
+    QVERIFY(result->filesByExt.contains("csproj"));
+    QCOMPARE(result->filesByExt.value("csproj"), 1);
+    QVERIFY(result->filesByExt.contains("cs"));
+    QCOMPARE(result->filesByExt.value("cs"), 1);
     QCOMPARE(result->totalFiles, 2);
 }
 

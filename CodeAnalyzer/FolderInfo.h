@@ -14,17 +14,20 @@ class FolderInfoData : public QSharedData
 {
 public:
     FolderInfoData()
-        : totalFiles(0)
     {
     }
 
-    FolderInfoData(const FolderInfoData& other)
-        : QSharedData(other), folderPath(other.folderPath), totalFiles(other.totalFiles)
+    FolderInfoData(const FolderInfoData& other) :
+        QSharedData(other),
+        folderPath(other.folderPath),
+        filesByExt(other.filesByExt),
+        totalFiles(other.totalFiles)
     {
     }
 
     QString folderPath;
-    int totalFiles;
+    QHash<QString, int> filesByExt;
+    int totalFiles{0};
 };
 
 #endif // FOLDERINFO_H
