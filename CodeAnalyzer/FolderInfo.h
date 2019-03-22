@@ -4,6 +4,8 @@
 #include <QSharedData>
 #include <QMetaType>
 #include <QString>
+#include <QVector>
+#include "FileInfo.h"
 
 class FolderInfoData;
 
@@ -21,13 +23,16 @@ public:
         QSharedData(other),
         folderPath(other.folderPath),
         filesByExt(other.filesByExt),
-        totalFiles(other.totalFiles)
+        textFiles(other.textFiles),
+        binaryFiles(other.binaryFiles)
     {
     }
 
     QString folderPath;
     QHash<QString, int> filesByExt;
-    int totalFiles{0};
+    QVector<FileInfo> inaccessibleFiles;
+    QVector<TextFileInfo> textFiles;
+    QVector<BinaryFileInfo> binaryFiles;
 };
 
 #endif // FOLDERINFO_H

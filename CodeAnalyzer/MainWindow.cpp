@@ -37,8 +37,10 @@ void MainWindow::indicateProcessing()
 void MainWindow::updateFolderInfo(FolderInfo info)
 {
     ui->statusBar->clearMessage();
-    QMessageBox::information(this, tr("Done"), tr("I scanned %1 and found %2 files").arg(info->folderPath).arg(info->totalFiles));
-    ui->statusBar->showMessage(tr("%1 files found").arg(info->totalFiles));
+    ui->label_textFiles->setText(QString::number(info->textFiles.count()));
+    ui->label_binaryFiles->setText(QString::number(info->binaryFiles.count()));
+    ui->label_inaccessibleFiles->setText(QString::number(info->inaccessibleFiles.count()));
+    ui->statusBar->showMessage(tr("%1 files found").arg(info->textFiles.count() + info->binaryFiles.count() + info->inaccessibleFiles.count()));
 }
 
 MainWindow::~MainWindow()

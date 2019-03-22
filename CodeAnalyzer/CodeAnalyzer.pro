@@ -32,7 +32,8 @@ SOURCES += \
 HEADERS += \
     MainWindow.h \
     FolderProcessor.h \
-    FolderInfo.h
+    FolderInfo.h \
+    FileInfo.h
 
 FORMS += \
     MainWindow.ui
