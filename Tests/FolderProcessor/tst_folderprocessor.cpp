@@ -50,7 +50,8 @@ void FolderProcessorTests::testFileCount()
     QCOMPARE(result->filesByExt.value("cs"), 2);
     QVERIFY(result->filesByExt.contains("dll"));
     QCOMPARE(result->filesByExt.value("dll"), 1);
-    QCOMPARE(result->textFiles.count() + result->binaryFiles.count() + result->inaccessibleFiles.count(), 4);
+    QCOMPARE(result->textFiles.count(), 3);
+    QCOMPARE(result->binaryFiles.count(), 1);
 }
 
 void FolderProcessorTests::testEncodings()
@@ -89,7 +90,10 @@ void FolderProcessorTests::testEncodings()
         {
             QFAIL("Unexpected filename");
         }
+
+        QCOMPARE(fileInfo.totalLines, 2);
     }
+    QCOMPARE(result->totalLines, 12);
 }
 
 QTEST_APPLESS_MAIN(FolderProcessorTests)

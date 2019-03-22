@@ -22,17 +22,21 @@ public:
     FolderInfoData(const FolderInfoData& other) :
         QSharedData(other),
         folderPath(other.folderPath),
-        filesByExt(other.filesByExt),
         textFiles(other.textFiles),
-        binaryFiles(other.binaryFiles)
+        binaryFiles(other.binaryFiles),
+        filesByExt(other.filesByExt),
+        totalLines(other.totalLines)
     {
     }
 
     QString folderPath;
-    QHash<QString, int> filesByExt;
     QVector<FileInfo> inaccessibleFiles;
     QVector<TextFileInfo> textFiles;
     QVector<BinaryFileInfo> binaryFiles;
+
+    // Aggregates
+    QHash<QString, int> filesByExt;
+    quint64 totalLines{0};
 };
 
 #endif // FOLDERINFO_H

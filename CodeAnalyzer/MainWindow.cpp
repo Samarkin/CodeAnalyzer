@@ -40,6 +40,7 @@ void MainWindow::updateFolderInfo(FolderInfo info)
     ui->label_textFiles->setText(QString::number(info->textFiles.count()));
     ui->label_binaryFiles->setText(QString::number(info->binaryFiles.count()));
     ui->label_inaccessibleFiles->setText(QString::number(info->inaccessibleFiles.count()));
+    ui->label_totalLines->setText(QString::number(info->totalLines));
     ui->statusBar->showMessage(tr("%1 files found").arg(info->textFiles.count() + info->binaryFiles.count() + info->inaccessibleFiles.count()));
 }
 
