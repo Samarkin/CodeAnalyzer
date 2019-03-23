@@ -43,7 +43,6 @@ enum class Newlines
     Unknown,
     Windows,
     Unix,
-    MacOS,
     Mixed,
 };
 

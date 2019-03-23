@@ -47,7 +47,6 @@ namespace
         char_type ch;
         while (get_char(file, &ch))
         {
-            // TODO: Add MacOS line endings support
             // TODO: Add support for no newline at the end
             if (ch == '\n') fileInfo.totalLines++;
             if (!IS_TEXT(ch)) return false;
