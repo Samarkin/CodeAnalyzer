@@ -25,7 +25,12 @@ public:
         textFiles(other.textFiles),
         binaryFiles(other.binaryFiles),
         filesByExt(other.filesByExt),
-        totalLines(other.totalLines)
+        totalLines(other.totalLines),
+        filesWithEol(other.filesWithEol),
+        filesWithNoEol(other.filesWithNoEol),
+        filesWithWindowsNewlines(other.filesWithWindowsNewlines),
+        filesWithUnixNewlines(other.filesWithUnixNewlines),
+        filesWithMixedNewlines(other.filesWithMixedNewlines)
     {
     }
 
@@ -37,6 +42,11 @@ public:
     // Aggregates
     QHash<QString, int> filesByExt;
     quint64 totalLines{0};
+    quint32 filesWithEol{0};
+    quint32 filesWithNoEol{0};
+    quint32 filesWithWindowsNewlines{0};
+    quint32 filesWithUnixNewlines{0};
+    quint32 filesWithMixedNewlines{0};
 };
 
 #endif // FOLDERINFO_H

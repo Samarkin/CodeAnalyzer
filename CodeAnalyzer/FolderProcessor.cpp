@@ -148,6 +148,11 @@ void FolderProcessor::process(const QString folderPath)
             }
             info->textFiles.append(tfi);
             info->totalLines += quint64(tfi.totalLines);
+            if (tfi.trailingNewline) info->filesWithEol++;
+            else info->filesWithNoEol++;
+            if (tfi.newlines == Newlines::Windows) info->filesWithWindowsNewlines++;
+            else if (tfi.newlines == Newlines::Unix) info->filesWithUnixNewlines++;
+            else if (tfi.newlines == Newlines::Mixed) info->filesWithMixedNewlines++;
         }
 
     }

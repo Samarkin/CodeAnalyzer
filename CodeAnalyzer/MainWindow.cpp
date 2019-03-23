@@ -43,7 +43,12 @@ void MainWindow::updateFolderInfo(FolderInfo info)
     ui->label_binaryFiles->setText(QString::number(info->binaryFiles.count()));
     ui->label_inaccessibleFiles->setText(QString::number(info->inaccessibleFiles.count()));
     ui->label_totalLines->setText(QString::number(info->totalLines));
-    ui->statusBar->showMessage(tr("%1 files found").arg(info->textFiles.count() + info->binaryFiles.count() + info->inaccessibleFiles.count()));
+    ui->label_filesWithEol->setText(QString::number(info->filesWithEol));
+    ui->label_filesWithNoEol->setText(QString::number(info->filesWithNoEol));
+    ui->label_filesWithWindowsNewlines->setText(QString::number(info->filesWithWindowsNewlines));
+    ui->label_filesWithUnixNewlines->setText(QString::number(info->filesWithUnixNewlines));
+    ui->label_filesWithMixedNewlines->setText(QString::number(info->filesWithMixedNewlines));
+    ui->statusBar->showMessage(tr("%1 files analyzed").arg(info->textFiles.count() + info->binaryFiles.count() + info->inaccessibleFiles.count()));
 }
 
 MainWindow::~MainWindow()
