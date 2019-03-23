@@ -68,17 +68,15 @@ void FolderProcessor::process(const QString folderPath)
         QFileInfo fileInfo = it.fileInfo();
         if (fileInfo.isFile())
         {
-            FileInfo fi{fileInfo.filePath(), fileInfo.suffix()};
-            TextFileInfo tfi{fi.path(), fi.ext()};
-            BinaryFileInfo bfi{fi.path(), fi.ext()};
+            TextFileInfo tfi{fileInfo.filePath(), fileInfo.suffix()};
             // TODO: This should eventually be removed
-            info->filesByExt[fi.ext()]++;
+            info->filesByExt[tfi.ext()]++;
 
             // Read file
-            QFile file{fi.path()};
+            QFile file{tfi.path()};
             if (!file.open(QFile::ReadOnly))
             {
-                info->inaccessibleFiles.append(fi);
+                info->inaccessibleFiles.append(tfi);
                 continue;
             }
             struct buffer {
@@ -125,7 +123,7 @@ void FolderProcessor::process(const QString folderPath)
 
             if (!isTextFile)
             {
-                info->binaryFiles.append(bfi);
+                info->binaryFiles.append(tfi);
                 continue;
             }
             info->textFiles.append(tfi);

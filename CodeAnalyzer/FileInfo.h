@@ -17,6 +17,7 @@ private:
 struct BinaryFileInfo : public FileInfo
 {
     BinaryFileInfo() = default;
+    BinaryFileInfo(const FileInfo& fileInfo) : FileInfo(fileInfo) {}
     BinaryFileInfo(QString path, QString ext) : FileInfo(path, ext) {}
 };
 
