@@ -10,6 +10,7 @@ private slots:
     void initTestCase();
     void testFileCount();
     void testEncodings();
+    void testLines();
 
 private:
     QDir dir{QFINDTESTDATA("TestData")};
@@ -21,6 +22,12 @@ void FolderProcessorTests::initTestCase()
 
     QVERIFY2(dir.exists(), "Failed to find test data");
 }
+
+#define QCOMPARE2(actual, expected, message) \
+    do {\
+        QByteArray msg = QString{"%1\nExpected: %2\nActual: %3"}.arg(message).arg(expected).arg(actual).toLocal8Bit();\
+        QVERIFY2(actual == expected, msg.data());\
+    } while(false)
 
 #define TEST_DIR(DIRNAME) \
     FolderProcessor processor;\
@@ -91,9 +98,61 @@ void FolderProcessorTests::testEncodings()
             QFAIL("Unexpected filename");
         }
 
-        QCOMPARE(fileInfo.totalLines, 2);
+        QCOMPARE2(fileInfo.totalLines, 2, fileInfo.path());
     }
     QCOMPARE(result->totalLines, 12);
+}
+
+void FolderProcessorTests::testLines()
+{
+    TEST_DIR("Lines");
+
+    QCOMPARE(result->textFiles.count(), 9);
+    QCOMPARE(result->binaryFiles.count(), 0);
+    for (TextFileInfo fileInfo : result->textFiles)
+    {
+        QString filename = QFileInfo(fileInfo.path()).fileName();
+        if (filename == "unknown.txt")
+        {
+            QCOMPARE(fileInfo.newlines, Newlines::Unknown);
+            QCOMPARE2(fileInfo.totalLines, 1, fileInfo.path());
+            QCOMPARE(fileInfo.trailingNewline, false);
+            continue;
+        }
+
+        if (filename.startsWith("dos-"))
+        {
+            QCOMPARE(fileInfo.newlines, Newlines::Windows);
+            QCOMPARE2(fileInfo.totalLines, 3, fileInfo.path());
+        }
+        else if (filename.startsWith("unix-"))
+        {
+            QCOMPARE(fileInfo.newlines, Newlines::Unix);
+            QCOMPARE2(fileInfo.totalLines, 3, fileInfo.path());
+        }
+        else if (filename.startsWith("mixed"))
+        {
+            QCOMPARE(fileInfo.newlines, Newlines::Mixed);
+            QCOMPARE2(fileInfo.totalLines, 3, fileInfo.path());
+        }
+        else
+        {
+            QFAIL("Unexpected filename");
+        }
+
+        if (filename.endsWith("-eol.txt"))
+        {
+            QCOMPARE(fileInfo.trailingNewline, true);
+        }
+        else if (filename.endsWith("-noeol.txt"))
+        {
+            QCOMPARE(fileInfo.trailingNewline, false);
+        }
+        else
+        {
+            QFAIL("Unexpected filename");
+        }
+    }
 }
 
 QTEST_APPLESS_MAIN(FolderProcessorTests)

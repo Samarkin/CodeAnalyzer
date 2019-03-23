@@ -44,13 +44,33 @@ namespace
     template<typename char_type>
     bool analyzeTextFile(QFile& file, TextFileInfo& fileInfo, bool (*get_char)(QFile& file, char_type* ch))
     {
+        bool unixNewlines = false;
+        bool windowsNewlines = false;
+        char_type prevCh = '\0';
         char_type ch;
         while (get_char(file, &ch))
         {
-            // TODO: Add support for no newline at the end
-            if (ch == '\n') fileInfo.totalLines++;
+            if (ch == '\n')
+            {
+                fileInfo.totalLines++;
+                if (prevCh == '\r') windowsNewlines = true;
+                else unixNewlines = true;
+            }
             if (!IS_TEXT(ch)) return false;
+            prevCh = ch;
         }
+        if (ch == '\n')
+        {
+            fileInfo.trailingNewline = true;
+        }
+        else
+        {
+            fileInfo.totalLines++;
+            fileInfo.trailingNewline = false;
+        }
+        fileInfo.newlines = windowsNewlines
+            ? (unixNewlines ? Newlines::Mixed : Newlines::Windows)
+            : (unixNewlines ? Newlines::Unix : Newlines::Unknown);
         return true;
     }
 } // private namespace
