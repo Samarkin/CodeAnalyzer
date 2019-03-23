@@ -100,7 +100,7 @@ void FolderProcessorTests::testEncodings()
 
         QCOMPARE2(fileInfo.totalLines, 2, fileInfo.path());
     }
-    QCOMPARE(result->totalLines, 12);
+    QCOMPARE(result->totalLines, 12ul);
 }
 
 void FolderProcessorTests::testLines()
