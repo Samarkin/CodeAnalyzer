@@ -2,6 +2,8 @@
 #include "ui_MainWindow.h"
 #include <QFileDialog>
 #include <QMessageBox>
+#include <QDragEnterEvent>
+#include <QMimeData>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -49,4 +51,29 @@ MainWindow::~MainWindow()
     delete ui;
     processingThread.quit();
     processingThread.wait();
+}
+
+void MainWindow::dragEnterEvent(QDragEnterEvent *event)
+{
+    if (event->mimeData()->hasUrls())
+    {
+        event->acceptProposedAction();
+    }
+}
+
+void MainWindow::dragLeaveEvent(QDragLeaveEvent *event)
+{
+    event->accept();
+}
+
+void MainWindow::dropEvent(QDropEvent *event)
+{
+    const QList<QUrl> urls = event->mimeData()->urls();
+    if (urls.count() > 0) {
+        QString path = urls.at(0).toLocalFile();
+        if (!path.isEmpty() && QDir(path).exists()) {
+            QMetaObject::invokeMethod(&processor, "process", Q_ARG(QString, path));
+        }
+    }
+    event->acceptProposedAction();
 }

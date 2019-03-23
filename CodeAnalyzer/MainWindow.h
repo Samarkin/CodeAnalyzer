@@ -15,12 +15,17 @@ class MainWindow : public QMainWindow
 
 public:
     explicit MainWindow(QWidget *parent = nullptr);
-    ~MainWindow();
+    ~MainWindow() override;
 
 public slots:
     void openClicked();
     void indicateProcessing();
     void updateFolderInfo(FolderInfo info);
+
+protected:
+    void dragEnterEvent(QDragEnterEvent*) override;
+    void dragLeaveEvent(QDragLeaveEvent*) override;
+    void dropEvent(QDropEvent*) override;
 
 private:
     Ui::MainWindow *ui;
