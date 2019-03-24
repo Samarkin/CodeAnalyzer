@@ -88,12 +88,12 @@ void FolderProcessor::process(const QString folderPath)
         QFileInfo fileInfo = it.fileInfo();
         if (fileInfo.isFile())
         {
-            TextFileInfo tfi{fileInfo.filePath(), fileInfo.suffix()};
+            TextFileInfo tfi{folder.relativeFilePath(fileInfo.filePath()), fileInfo.suffix()};
             // TODO: This should eventually be removed
             info->filesByExt[tfi.ext()]++;
 
             // Read file
-            QFile file{tfi.path()};
+            QFile file{fileInfo.filePath()};
             if (!file.open(QFile::ReadOnly))
             {
                 info->inaccessibleFiles.append(tfi);
