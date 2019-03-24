@@ -20,6 +20,7 @@ public:
 public slots:
     void openClicked();
     void indicateProcessing();
+    void linkActivated(const QString& link);
     void updateFolderInfo(FolderInfo info);
 
 protected:

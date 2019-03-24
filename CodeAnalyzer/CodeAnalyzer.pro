@@ -27,16 +27,19 @@ CONFIG += c++11
 SOURCES += \
     main.cpp \
     MainWindow.cpp \
-    FolderProcessor.cpp
+    FolderProcessor.cpp \
+    FileListWindow.cpp
 
 HEADERS += \
     MainWindow.h \
     FolderProcessor.h \
     FolderInfo.h \
-    FileInfo.h
+    FileInfo.h \
+    FileListWindow.h
 
 FORMS += \
-    MainWindow.ui
+    MainWindow.ui \
+    FileListWindow.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

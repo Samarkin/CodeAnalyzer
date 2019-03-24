@@ -27,7 +27,7 @@
     <item row="0" column="0">
      <widget class="QLabel" name="label">
       <property name="text">
-       <string>Text files:</string>
+       <string>&lt;a href=&quot;textFiles&quot;&gt;Text files:&lt;/a&gt;</string>
       </property>
      </widget>
     </item>
@@ -41,7 +41,7 @@
     <item row="1" column="0">
      <widget class="QLabel" name="label_2">
       <property name="text">
-       <string>Binary files:</string>
+       <string>&lt;a href=&quot;binaryFiles&quot;&gt;Binary files:&lt;/a&gt;</string>
       </property>
      </widget>
     </item>
@@ -55,7 +55,7 @@
     <item row="2" column="0">
      <widget class="QLabel" name="label_3">
       <property name="text">
-       <string>Failed to open:</string>
+       <string>&lt;a href=&quot;inaccessibleFiles&quot;&gt;Failed to open:&lt;/a&gt;</string>
       </property>
      </widget>
     </item>
@@ -92,7 +92,7 @@
     <item row="5" column="0">
      <widget class="QLabel" name="label_6">
       <property name="text">
-       <string>W/o trailing EOL:</string>
+       <string>&lt;a href=&quot;filesWithNoEol&quot;&gt;W/o trailing EOL:&lt;/a&gt;</string>
       </property>
      </widget>
     </item>
@@ -106,7 +106,7 @@
     <item row="6" column="0">
      <widget class="QLabel" name="label_7">
       <property name="text">
-       <string>Windows EOLs:</string>
+       <string>&lt;a href=&quot;filesWithWindowsNewlines&quot;&gt;Windows EOLs:&lt;/a&gt;</string>
       </property>
      </widget>
     </item>
@@ -120,7 +120,7 @@
     <item row="7" column="0">
      <widget class="QLabel" name="label_8">
       <property name="text">
-       <string>Unix EOLs:</string>
+       <string>&lt;a href=&quot;filesWithUnixNewlines&quot;&gt;Unix EOLs:&lt;/a&gt;</string>
       </property>
      </widget>
     </item>
@@ -134,7 +134,7 @@
     <item row="8" column="0">
      <widget class="QLabel" name="label_9">
       <property name="text">
-       <string>Mixed EOLs:</string>
+       <string>&lt;a href=&quot;filesWithMixedNewlines&quot;&gt;Mixed EOLs:&lt;/a&gt;</string>
       </property>
      </widget>
     </item>
@@ -178,7 +178,7 @@
     <item row="4" column="0">
      <widget class="QLabel" name="label_5">
       <property name="text">
-       <string>With trailing EOL:</string>
+       <string>&lt;a href=&quot;filesWithEol&quot;&gt;With trailing EOL:&lt;/a&gt;</string>
       </property>
      </widget>
     </item>

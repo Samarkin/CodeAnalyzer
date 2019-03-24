@@ -1,9 +1,12 @@
 #include "MainWindow.h"
 #include "ui_MainWindow.h"
+#include "FileListWindow.h"
 #include <QFileDialog>
 #include <QMessageBox>
 #include <QDragEnterEvent>
 #include <QMimeData>
+
+#define CONNECT_LABEL_LINK(label) connect(label, SIGNAL(linkActivated(const QString&)), this, SLOT(linkActivated(const QString&)))
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -12,6 +15,15 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
     connect(ui->actionOpen, SIGNAL(triggered()),
             this, SLOT(openClicked()));
+    CONNECT_LABEL_LINK(ui->label);
+    CONNECT_LABEL_LINK(ui->label_2);
+    CONNECT_LABEL_LINK(ui->label_3);
+    CONNECT_LABEL_LINK(ui->label_4);
+    CONNECT_LABEL_LINK(ui->label_5);
+    CONNECT_LABEL_LINK(ui->label_6);
+    CONNECT_LABEL_LINK(ui->label_7);
+    CONNECT_LABEL_LINK(ui->label_8);
+    CONNECT_LABEL_LINK(ui->label_9);
 
     processor.moveToThread(&processingThread);
     connect(&processor, SIGNAL(doneProcessing(FolderInfo)),
@@ -34,6 +46,14 @@ void MainWindow::openClicked()
 void MainWindow::indicateProcessing()
 {
     ui->statusBar->showMessage(tr("Analyzing..."));
+}
+
+void MainWindow::linkActivated(const QString& link)
+{
+    auto *wnd = new FileListWindow{this};
+    wnd->setAttribute(Qt::WA_DeleteOnClose);
+    wnd->setWindowFlag(Qt::Window);
+    wnd->show();
 }
 
 void MainWindow::updateFolderInfo(FolderInfo info)
