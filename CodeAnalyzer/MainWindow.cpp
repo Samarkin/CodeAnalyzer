@@ -50,7 +50,56 @@ void MainWindow::indicateProcessing()
 
 void MainWindow::linkActivated(const QString& link)
 {
-    auto *wnd = new FileListWindow{this};
+    if (folderInfo == nullptr)
+    {
+        return;
+    }
+
+    FileListWindow *wnd = new FileListWindow{folderInfo->folderPath, this};
+    if (link == "binaryFiles")
+    {
+        wnd->setFileList(folderInfo->binaryFiles);
+        wnd->setTitle(tr("Binary files"));
+    }
+    else if (link == "textFiles")
+    {
+        wnd->setFileList(folderInfo->textFiles);
+        wnd->setTitle(tr("Text files"));
+    }
+    else if (link == "inaccessibleFiles")
+    {
+        wnd->setFileList(folderInfo->inaccessibleFiles);
+        wnd->setTitle(tr("Inaccessible files"));
+    }
+    else if (link == "filesWithEol")
+    {
+        wnd->setFileList(folderInfo->textFiles, [](const TextFileInfo& i) { return i.trailingNewline; });
+        wnd->setTitle(tr("Files with newline at the end"));
+    }
+    else if (link == "filesWithNoEol")
+    {
+        wnd->setFileList(folderInfo->textFiles, [](const TextFileInfo& i) { return !i.trailingNewline; });
+        wnd->setTitle(tr("Files without newline at the end"));
+    }
+    else if (link == "filesWithWindowsNewlines")
+    {
+        wnd->setFileList(folderInfo->textFiles, [](const TextFileInfo& i) { return i.newlines == Newlines::Windows; });
+        wnd->setTitle(tr("Files with Windows newlines"));
+    }
+    else if (link == "filesWithUnixNewlines")
+    {
+        wnd->setFileList(folderInfo->textFiles, [](const TextFileInfo& i) { return i.newlines == Newlines::Unix; });
+        wnd->setTitle(tr("Files with Unix newlines"));
+    }
+    else if (link == "filesWithMixedNewlines")
+    {
+        wnd->setFileList(folderInfo->textFiles, [](const TextFileInfo& i) { return i.newlines == Newlines::Mixed; });
+        wnd->setTitle(tr("Files with mixed newlines"));
+    }
+    else
+    {
+        qFatal("Broken link");
+    }
     wnd->setAttribute(Qt::WA_DeleteOnClose);
     wnd->setWindowFlag(Qt::Window);
     wnd->show();
@@ -58,6 +107,7 @@ void MainWindow::linkActivated(const QString& link)
 
 void MainWindow::updateFolderInfo(FolderInfo info)
 {
+    folderInfo = info;
     ui->statusBar->clearMessage();
     ui->label_textFiles->setText(QString::number(info->textFiles.count()));
     ui->label_binaryFiles->setText(QString::number(info->binaryFiles.count()));

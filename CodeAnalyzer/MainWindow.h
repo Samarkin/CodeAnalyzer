@@ -32,6 +32,7 @@ private:
     Ui::MainWindow *ui;
     FolderProcessor processor;
     QThread processingThread;
+    FolderInfo folderInfo;
 };
 
 #endif // MAINWINDOW_H
