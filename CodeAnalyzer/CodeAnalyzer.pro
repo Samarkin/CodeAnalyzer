@@ -35,7 +35,8 @@ HEADERS += \
     FolderProcessor.h \
     FolderInfo.h \
     FileInfo.h \
-    FileListWindow.h
+    FileListWindow.h \
+    TextUtils.h
 
 FORMS += \
     MainWindow.ui \

@@ -20,6 +20,9 @@ public:
     void setFileList(const TCollection<TFileInfo>& collection, TPredicate pred = [](const TFileInfo&) {return true;});
     void setTitle(QString title);
 
+public slots:
+   void selectionChanged(const QModelIndex&, const QModelIndex&);
+
 private:
     QStandardItem *modelRoot;
     Ui::FileListWindow *ui;

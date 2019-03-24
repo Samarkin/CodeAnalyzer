@@ -1,79 +1,40 @@
 #include "FolderProcessor.h"
+#include "TextUtils.h"
 #include <QDir>
 #include <QDirIterator>
 
-namespace
+template<typename codeUnit_t>
+bool analyzeTextFile(QFile& file, TextFileInfo& fileInfo, bool (*getCodeUnit)(QFile& file, codeUnit_t* pUnit))
 {
-    #define IS_TEXT(ch) (ch == '\r' || ch == '\n' || ch == '\t' || ch > 31)
-
-    template<typename char_type>
-    bool getChar(QFile& file, char_type* ch)
+    bool unixNewlines = false;
+    bool windowsNewlines = false;
+    codeUnit_t prevUnit = '\0';
+    codeUnit_t unit;
+    while (getCodeUnit(file, &unit))
     {
-        return file.read(reinterpret_cast<char*>(ch), sizeof *ch) == sizeof(char_type);
-    }
-
-    template<typename char_type>
-    bool getCharAndSwapBits(QFile& file, char_type* ch);
-
-    template<>
-    bool getCharAndSwapBits(QFile& file, quint32* ch)
-    {
-        if (file.read(reinterpret_cast<char*>(ch), sizeof *ch) < 4)
-        {
-            return false;
-        }
-        *ch = ((*ch & 0xFF) << 24)
-                | ((*ch & 0xFF00) << 8)
-                | ((*ch & 0xFF0000) >> 8)
-                | ((*ch & 0xFF000000) >> 24);
-        return true;
-    }
-
-    template<>
-    bool getCharAndSwapBits(QFile& file, quint16* ch)
-    {
-        if (file.read(reinterpret_cast<char*>(ch), sizeof *ch) < 2)
-        {
-            return false;
-        }
-        *ch = quint16((*ch & 0xFF) << 8)
-                | ((*ch & 0xFF00) >> 8);
-        return true;
-    }
-
-    template<typename char_type>
-    bool analyzeTextFile(QFile& file, TextFileInfo& fileInfo, bool (*get_char)(QFile& file, char_type* ch))
-    {
-        bool unixNewlines = false;
-        bool windowsNewlines = false;
-        char_type prevCh = '\0';
-        char_type ch;
-        while (get_char(file, &ch))
-        {
-            if (ch == '\n')
-            {
-                fileInfo.totalLines++;
-                if (prevCh == '\r') windowsNewlines = true;
-                else unixNewlines = true;
-            }
-            if (!IS_TEXT(ch)) return false;
-            prevCh = ch;
-        }
-        if (ch == '\n')
-        {
-            fileInfo.trailingNewline = true;
-        }
-        else
+        if (unit == '\n')
         {
             fileInfo.totalLines++;
-            fileInfo.trailingNewline = false;
+            if (prevUnit == '\r') windowsNewlines = true;
+            else unixNewlines = true;
         }
-        fileInfo.newlines = windowsNewlines
-            ? (unixNewlines ? Newlines::Mixed : Newlines::Windows)
-            : (unixNewlines ? Newlines::Unix : Newlines::Unknown);
-        return true;
+        if (!IS_TEXT_CODE_UNIT(unit)) return false;
+        prevUnit = unit;
     }
-} // private namespace
+    if (unit == '\n')
+    {
+        fileInfo.trailingNewline = true;
+    }
+    else
+    {
+        fileInfo.totalLines++;
+        fileInfo.trailingNewline = false;
+    }
+    fileInfo.newlines = windowsNewlines
+        ? (unixNewlines ? Newlines::Mixed : Newlines::Windows)
+        : (unixNewlines ? Newlines::Unix : Newlines::Unknown);
+    return true;
+}
 
 void FolderProcessor::process(const QString folderPath)
 {
@@ -99,48 +60,28 @@ void FolderProcessor::process(const QString folderPath)
                 info->inaccessibleFiles.append(tfi);
                 continue;
             }
-            struct buffer {
-                union {
-                    char raw[4];
-                    quint8 bytes[4];
-                    quint32 char32;
-                    quint16 char16;
-                    quint8 char8;
-                };
-            } buffer;
             bool isTextFile;
-
-            qint64 buffer_size = file.read(buffer.raw, sizeof(buffer));
-            if (buffer_size >= 4 && buffer.char32 == 0xFFFE0000U) {
-                // REVIEW: Is it safe to always assume Little Endian CPU?
-                tfi.encoding = Encoding::Utf32BE;
-                isTextFile = analyzeTextFile(file, tfi, getCharAndSwapBits<quint32>);
+            tfi.encoding = detectEncodingAndAdvanceToFirstCodeUnit(file);
+            switch (tfi.encoding) {
+            case Encoding::NoBom:
+                isTextFile = analyzeTextFile(file, tfi, getCodeUnit<quint8>);
+                break;
+            case Encoding::Utf8:
+                isTextFile = analyzeTextFile(file, tfi, getCodeUnit<quint8>);
+                break;
+            case Encoding::Utf16BE:
+                isTextFile = analyzeTextFile(file, tfi, getCodeUnitAndSwapOctets<quint16>);
+                break;
+            case Encoding::Utf16LE:
+                isTextFile = analyzeTextFile(file, tfi, getCodeUnit<quint16>);
+                break;
+            case Encoding::Utf32BE:
+                isTextFile = analyzeTextFile(file, tfi, getCodeUnitAndSwapOctets<quint32>);
+                break;
+            case Encoding::Utf32LE:
+                isTextFile = analyzeTextFile(file, tfi, getCodeUnit<quint32>);
+                break;
             }
-            else if (buffer_size >= 4 && buffer.char32 == 0x0000FEFFU) {
-                tfi.encoding = Encoding::Utf32LE;
-                isTextFile = analyzeTextFile(file, tfi, getChar<quint32>);
-            }
-            else if (buffer_size >= 2 && buffer.char16 == 0xFFFEU) {
-                tfi.encoding = Encoding::Utf16BE;
-                file.seek(2);
-                isTextFile = analyzeTextFile(file, tfi, getCharAndSwapBits<quint16>);
-            }
-            else if (buffer_size >= 2 && buffer.char16 == 0xFEFFU) {
-                tfi.encoding = Encoding::Utf16LE;
-                file.seek(2);
-                isTextFile = analyzeTextFile(file, tfi, getChar<quint16>);
-            }
-            else if (buffer_size >= 3 && buffer.bytes[0] == 0xEF && buffer.bytes[1] == 0xBB && buffer.bytes[2] == 0xBF) {
-                tfi.encoding = Encoding::Utf8;
-                file.seek(3);
-                isTextFile = analyzeTextFile(file, tfi, getChar<quint8>);
-            }
-            else {
-                tfi.encoding = Encoding::NoBom;
-                file.seek(0);
-                isTextFile = analyzeTextFile(file, tfi, getChar<quint8>);
-            }
-
             if (!isTextFile)
             {
                 info->binaryFiles.append(tfi);
