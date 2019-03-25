@@ -1,6 +1,7 @@
 #include <QtTest>
 #include <QSignalSpy>
 #include "FolderProcessor.h"
+#include "TextUtils.h"
 
 class FolderProcessorTests : public QObject
 {
@@ -11,6 +12,8 @@ private slots:
     void testFileCount();
     void testEncodings();
     void testLines();
+    void testRead();
+    void testReadBinaryFile();
 
 private:
     QDir dir{QFINDTESTDATA("TestData")};
@@ -152,6 +155,45 @@ void FolderProcessorTests::testLines()
         {
             QFAIL("Unexpected filename");
         }
+    }
+}
+
+void FolderProcessorTests::testRead()
+{
+    TEST_DIR("Encodings");
+
+    QCOMPARE(result->textFiles.count(), 6);
+    QCOMPARE(result->binaryFiles.count(), 0);
+    QString referenceText;
+    QDir folder{result->folderPath};
+    for (TextFileInfo fileInfo : result->textFiles)
+    {
+        QFile file{folder.filePath(fileInfo.path())};
+        QVERIFY(file.open(QFile::ReadOnly));
+        QString text;
+        QVERIFY(readAllText(file, &text));
+        if (referenceText.isEmpty())
+        {
+            referenceText = text;
+        }
+        else
+        {
+            QCOMPARE2(text, referenceText, fileInfo.path());
+        }
+    }
+}
+
+void FolderProcessorTests::testReadBinaryFile()
+{
+    TEST_DIR(".");
+    QVERIFY(result->binaryFiles.count() > 0);
+    QDir folder{result->folderPath};
+    for (BinaryFileInfo fileInfo : result->binaryFiles)
+    {
+        QFile file{folder.filePath(fileInfo.path())};
+        QVERIFY(file.open(QFile::ReadOnly));
+        QString text;
+        QVERIFY(!readAllText(file, &text));
     }
 }
 

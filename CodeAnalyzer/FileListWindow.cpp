@@ -52,26 +52,5 @@ void FileListWindow::selectionChanged(const QModelIndex& current, const QModelIn
     }
 
     QString text;
-    Encoding encoding = detectEncodingAndAdvanceToFirstCodeUnit(file);
-    switch (encoding) {
-    case Encoding::NoBom:
-        text = readAllText(file, getCodeUnit<quint8>);
-        break;
-    case Encoding::Utf8:
-        text = readAllText(file, getCodeUnit<quint8>);
-        break;
-    case Encoding::Utf16BE:
-        text = readAllText(file, getCodeUnitAndSwapOctets<quint16>);
-        break;
-    case Encoding::Utf16LE:
-        text = readAllText(file, getCodeUnit<quint16>);
-        break;
-    case Encoding::Utf32BE:
-        text = readAllText(file, getCodeUnitAndSwapOctets<quint32>);
-        break;
-    case Encoding::Utf32LE:
-        text = readAllText(file, getCodeUnit<quint32>);
-        break;
-    }
-    ui->textBrowser->setText(text);
+    ui->textBrowser->setText(readAllText(file, &text) ? text : tr("<Failed to open file>"));
 }

@@ -3,8 +3,8 @@
 #include <QDir>
 #include <QDirIterator>
 
-template<typename codeUnit_t>
-bool analyzeTextFile(QFile& file, TextFileInfo& fileInfo, bool (*getCodeUnit)(QFile& file, codeUnit_t* pUnit))
+template<typename codeUnit_t, bool (*getCodeUnit)(QFile& file, codeUnit_t* pUnit)>
+bool analyzeTextFile(QFile& file, TextFileInfo& fileInfo)
 {
     bool unixNewlines = false;
     bool windowsNewlines = false;
@@ -64,22 +64,22 @@ void FolderProcessor::process(const QString folderPath)
             tfi.encoding = detectEncodingAndAdvanceToFirstCodeUnit(file);
             switch (tfi.encoding) {
             case Encoding::NoBom:
-                isTextFile = analyzeTextFile(file, tfi, getCodeUnit<quint8>);
+                isTextFile = analyzeTextFile<quint8, getCodeUnit>(file, tfi);
                 break;
             case Encoding::Utf8:
-                isTextFile = analyzeTextFile(file, tfi, getCodeUnit<quint8>);
+                isTextFile = analyzeTextFile<quint8, getCodeUnit>(file, tfi);
                 break;
             case Encoding::Utf16BE:
-                isTextFile = analyzeTextFile(file, tfi, getCodeUnitAndSwapOctets<quint16>);
+                isTextFile = analyzeTextFile<quint16, getCodeUnitAndSwapOctets>(file, tfi);
                 break;
             case Encoding::Utf16LE:
-                isTextFile = analyzeTextFile(file, tfi, getCodeUnit<quint16>);
+                isTextFile = analyzeTextFile<quint16, getCodeUnit>(file, tfi);
                 break;
             case Encoding::Utf32BE:
-                isTextFile = analyzeTextFile(file, tfi, getCodeUnitAndSwapOctets<quint32>);
+                isTextFile = analyzeTextFile<quint32, getCodeUnitAndSwapOctets>(file, tfi);
                 break;
             case Encoding::Utf32LE:
-                isTextFile = analyzeTextFile(file, tfi, getCodeUnit<quint32>);
+                isTextFile = analyzeTextFile<quint32, getCodeUnit>(file, tfi);
                 break;
             }
             if (!isTextFile)
@@ -95,7 +95,6 @@ void FolderProcessor::process(const QString folderPath)
             else if (tfi.newlines == Newlines::Unix) info->filesWithUnixNewlines++;
             else if (tfi.newlines == Newlines::Mixed) info->filesWithMixedNewlines++;
         }
-
     }
     emit doneProcessing(info);
 }

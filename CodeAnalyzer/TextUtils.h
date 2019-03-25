@@ -5,15 +5,16 @@
 #include <QFile>
 
 #define IS_TEXT_CODE_UNIT(unit) (unit > 31 || unit == '\r' || unit == '\n' || unit == '\t')
+#define IS_TEXT_CODE_POINT(codePoint) IS_TEXT_CODE_UNIT(codePoint) // lower code points are equal to their code units in all supported encodings
 
 template<typename codeUnit_t>
-bool getCodeUnit(QFile& file, codeUnit_t* pUnit)
+inline bool getCodeUnit(QFile& file, codeUnit_t* pUnit)
 {
     return file.read(reinterpret_cast<char*>(pUnit), sizeof *pUnit) == sizeof(codeUnit_t);
 }
 
 template<typename codeUnit_t>
-bool getCodeUnitAndSwapOctets(QFile& file, codeUnit_t* pUnit);
+inline bool getCodeUnitAndSwapOctets(QFile& file, codeUnit_t* pUnit);
 
 template<>
 inline bool getCodeUnitAndSwapOctets(QFile& file, quint32* pUnit)
@@ -78,19 +79,130 @@ inline Encoding detectEncodingAndAdvanceToFirstCodeUnit(QFile& file)
     }
 }
 
-template<typename codeUnit_t>
-QString readAllText(QFile& file, bool (*getCodeUnit)(QFile& file, codeUnit_t* pUnit))
+inline bool getUtf8CodePoint(QFile& file, QChar* pChar)
+{
+    quint8 firstUnit;
+    if (!getCodeUnit<quint8>(file, &firstUnit)) return false;
+    if ((firstUnit & 0x80) == 0x00) {
+        *pChar = firstUnit;
+        return true;
+    }
+    quint8 unit;
+    if ((firstUnit & 0xE0) == 0xC0) {
+        quint32 codePoint = firstUnit & 0x1F;
+        if (!getCodeUnit<quint8>(file, &unit)) return false;
+        codePoint <<= 6;
+        codePoint |= unit & 0x3F;
+        *pChar = codePoint;
+        return true;
+    }
+    if ((firstUnit & 0xF0) == 0xE0) {
+        quint32 codePoint = firstUnit & 0x0F;
+        if (!getCodeUnit<quint8>(file, &unit)) return false;
+        codePoint <<= 6;
+        codePoint |= unit & 0x3F;
+        if (!getCodeUnit<quint8>(file, &unit)) return false;
+        codePoint <<= 6;
+        codePoint |= unit & 0x3F;
+        *pChar = codePoint;
+        return true;
+    }
+    if ((firstUnit & 0xF8) == 0xF0) {
+        quint32 codePoint = firstUnit & 0x07;
+        if (!getCodeUnit<quint8>(file, &unit)) return false;
+        codePoint <<= 6;
+        codePoint |= unit & 0x3F;
+        if (!getCodeUnit<quint8>(file, &unit)) return false;
+        codePoint <<= 6;
+        codePoint |= unit & 0x3F;
+        if (!getCodeUnit<quint8>(file, &unit)) return false;
+        codePoint <<= 6;
+        codePoint |= unit & 0x3F;
+        *pChar = codePoint;
+        return true;
+    }
+    // Assume 8-bit encoding
+    *pChar = firstUnit;
+    return true;
+}
+
+template<bool (*getCodeUnit)(QFile&, quint16*)>
+inline bool getUtf16CodePoint(QFile& file, QChar* pChar)
+{
+    quint16 leadingSurrogate;
+    if (!getCodeUnit(file, &leadingSurrogate))
+    {
+        return false;
+    }
+    if ((leadingSurrogate & 0xFC00) != 0xD800)
+    {
+        // not a surrogate pair
+        *pChar = leadingSurrogate;
+        return true;
+    }
+    quint16 trailingSurrogate;
+    if (!getCodeUnit(file, &trailingSurrogate))
+    {
+        return false;
+    }
+    if ((trailingSurrogate & 0xFC00) != 0xDC00)
+    {
+        // illegal surrogate pair
+        *pChar = 0xFFFD;
+        return true;
+    }
+    quint32 codePoint = leadingSurrogate & 0x3FF;
+    codePoint <<= 10;
+    codePoint |= trailingSurrogate & 0x3FF;
+    *pChar = codePoint;
+    return true;
+}
+
+template<bool (*getCodeUnit)(QFile&, quint32*)>
+inline bool getUtf32CodePoint(QFile& file, QChar* pChar)
+{
+    quint32 codePoint;
+    // For UTF-32, code units == code points
+    if (!getCodeUnit(file, &codePoint))
+    {
+        return false;
+    }
+    *pChar = codePoint;
+    return true;
+}
+
+template<bool (*getCodePoint)(QFile& file, QChar* pChar)>
+bool readAllText(QFile& file, QString* pString)
 {
     QVarLengthArray<QChar> chars;
-    codeUnit_t unit;
-    while (getCodeUnit(file, &unit))
+    QChar codePoint{};
+    while (getCodePoint(file, &codePoint))
     {
-        if (!IS_TEXT_CODE_UNIT(unit)) return QString{};
-        // TODO: Combine UTF-8 and UTF-16 code units into full unicode code points
-        chars.append(QChar{unit});
+        if (!IS_TEXT_CODE_POINT(codePoint)) return false;
+        chars.append(codePoint);
     }
     chars.append(QChar{});
-    return QString{chars.data()};
+    *pString = QString{chars.data()};
+    return true;
+}
+
+inline bool readAllText(QFile& file, QString* pString)
+{
+    Encoding encoding = detectEncodingAndAdvanceToFirstCodeUnit(file);
+    switch (encoding) {
+    case Encoding::NoBom:
+        return readAllText<getUtf8CodePoint>(file, pString);
+    case Encoding::Utf8:
+        return readAllText<getUtf8CodePoint>(file, pString);
+    case Encoding::Utf16BE:
+        return readAllText<getUtf16CodePoint<getCodeUnitAndSwapOctets>>(file, pString);
+    case Encoding::Utf16LE:
+        return readAllText<getUtf16CodePoint<getCodeUnit>>(file, pString);
+    case Encoding::Utf32BE:
+        return readAllText<getUtf32CodePoint<getCodeUnitAndSwapOctets>>(file, pString);
+    case Encoding::Utf32LE:
+        return readAllText<getUtf32CodePoint<getCodeUnit>>(file, pString);
+    }
 }
 
 #endif // UNICODE_H
