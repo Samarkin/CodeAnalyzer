@@ -51,6 +51,9 @@ void FileListWindow::selectionChanged(const QModelIndex& current, const QModelIn
         return;
     }
 
-    QString text;
-    ui->textBrowser->setText(readAllText(file, &text) ? text : tr("<Failed to open file>"));
+    QTextDocument *doc = new QTextDocument{ui->textBrowser};
+    if (!readAllText(file, doc)) {
+        doc->setHtml(tr("<span style='color:red'>&lt;Failed to open file&gt;</span>"));
+    }
+    ui->textBrowser->setDocument(doc);
 }

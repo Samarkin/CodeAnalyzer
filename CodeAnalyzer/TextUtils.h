@@ -4,6 +4,11 @@
 #include "FileInfo.h"
 #include <QFile>
 
+#ifdef QT_GUI_LIB
+#include <QTextDocument>
+#include <QTextBlock>
+#endif
+
 #define IS_TEXT_CODE_UNIT(unit) (unit > 31 || unit == '\r' || unit == '\n' || unit == '\t')
 #define IS_TEXT_CODE_POINT(codePoint) IS_TEXT_CODE_UNIT(codePoint) // lower code points are equal to their code units in all supported encodings
 
@@ -171,38 +176,103 @@ inline bool getUtf32CodePoint(QFile& file, QChar* pChar)
     return true;
 }
 
-template<bool (*getCodePoint)(QFile& file, QChar* pChar)>
-bool readAllText(QFile& file, QString* pString)
-{
-    QVarLengthArray<QChar> chars;
-    QChar codePoint{};
-    while (getCodePoint(file, &codePoint))
-    {
-        if (!IS_TEXT_CODE_POINT(codePoint)) return false;
-        chars.append(codePoint);
-    }
-    chars.append(QChar{});
-    *pString = QString{chars.data()};
-    return true;
-}
-
-inline bool readAllText(QFile& file, QString* pString)
+template<template<bool (*getCodePoint)(QFile& file, QChar* pChar)> class readAllFunc>
+bool readAll(QFile& file, typename readAllFunc<getUtf8CodePoint>::return_t* retValue)
 {
     Encoding encoding = detectEncodingAndAdvanceToFirstCodeUnit(file);
     switch (encoding) {
     case Encoding::NoBom:
-        return readAllText<getUtf8CodePoint>(file, pString);
+        return readAllFunc<getUtf8CodePoint>::read(file, retValue);
     case Encoding::Utf8:
-        return readAllText<getUtf8CodePoint>(file, pString);
+        return readAllFunc<getUtf8CodePoint>::read(file, retValue);
     case Encoding::Utf16BE:
-        return readAllText<getUtf16CodePoint<getCodeUnitAndSwapOctets>>(file, pString);
+        return readAllFunc<getUtf16CodePoint<getCodeUnitAndSwapOctets>>::read(file, retValue);
     case Encoding::Utf16LE:
-        return readAllText<getUtf16CodePoint<getCodeUnit>>(file, pString);
+        return readAllFunc<getUtf16CodePoint<getCodeUnit>>::read(file, retValue);
     case Encoding::Utf32BE:
-        return readAllText<getUtf32CodePoint<getCodeUnitAndSwapOctets>>(file, pString);
+        return readAllFunc<getUtf32CodePoint<getCodeUnitAndSwapOctets>>::read(file, retValue);
     case Encoding::Utf32LE:
-        return readAllText<getUtf32CodePoint<getCodeUnit>>(file, pString);
+        return readAllFunc<getUtf32CodePoint<getCodeUnit>>::read(file, retValue);
     }
 }
+
+template<bool (*getCodePoint)(QFile& file, QChar* pChar)>
+struct readAsString
+{
+    typedef QString return_t;
+    static bool read(QFile& file, return_t* string)
+    {
+        QVarLengthArray<QChar> chars;
+        QChar codePoint{};
+        while (getCodePoint(file, &codePoint))
+        {
+            if (!IS_TEXT_CODE_POINT(codePoint)) return false;
+            chars.append(codePoint);
+        }
+        chars.append(QChar{});
+        *string = QString{chars.data()};
+        return true;
+    }
+};
+
+inline bool readAllText(QFile& file, QString *string)
+{
+    return readAll<readAsString>(file, string);
+}
+
+#ifdef QT_GUI_LIB
+template<bool (*getCodePoint)(QFile& file, QChar* pChar)>
+struct readAsDocument
+{
+    typedef QTextDocument return_t;
+    static bool read(QFile& file, return_t* document)
+    {
+        document->clear();
+        QTextCursor cursor{document};
+        QTextCharFormat clear{};
+        QTextCharFormat highlighted{};
+        highlighted.setForeground(QBrush{QColor{Qt::white}});
+        highlighted.setBackground(QBrush{QColor{Qt::red}});
+
+        QVarLengthArray<QChar> chars;
+        QChar codePoint{};
+        while (getCodePoint(file, &codePoint))
+        {
+            if (!IS_TEXT_CODE_POINT(codePoint)) return false;
+            // TODO: Make generic (newlines vs. indentation vs. ...), incl. inverted (e.g. highlight only "\n", not "\r\n")
+            if (codePoint == '\r')
+            {
+                if (chars.count() > 0)
+                {
+                    chars.append(QChar{});
+                    cursor.insertText(QString{chars.data()}, clear);
+                    chars.clear();
+                }
+                cursor.insertText("\\r", highlighted);
+            }
+            else
+            {
+                chars.append(codePoint);
+            }
+        }
+        if (chars.count() > 0)
+        {
+            chars.append(QChar{});
+            cursor.insertText(QString{chars.data()}, clear);
+        }
+        if (codePoint != '\n')
+        {
+            cursor.insertText("\nNo newline at end of file", highlighted);
+        }
+        return true;
+    }
+};
+
+inline bool readAllText(QFile& file, QTextDocument *document)
+{
+    return readAll<readAsDocument>(file, document);
+}
+
+#endif
 
 #endif // UNICODE_H
