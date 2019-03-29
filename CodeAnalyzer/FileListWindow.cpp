@@ -44,16 +44,15 @@ void FileListWindow::selectionChanged(const QModelIndex& current, const QModelIn
     }
     QString fullPath = QDir{folderPath}.filePath(path);
     QFile file{fullPath};
+    QTextDocument *doc = ui->textBrowser->document();
     // Read file
     if (!file.open(QFile::ReadOnly))
     {
-        QMessageBox::critical(this, tr("Error"), tr("Failed to open %1").arg(path));
+        doc->setHtml(tr("<span style='color:red'>&lt;Failed to open file&gt;</span>"));
         return;
     }
 
-    QTextDocument *doc = new QTextDocument{ui->textBrowser};
     if (!readAllText(file, doc)) {
-        doc->setHtml(tr("<span style='color:red'>&lt;Failed to open file&gt;</span>"));
+        doc->setHtml(tr("<span style='color:red'>&lt;Binary file&gt;</span>"));
     }
-    ui->textBrowser->setDocument(doc);
 }
