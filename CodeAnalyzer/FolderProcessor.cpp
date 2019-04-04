@@ -36,6 +36,11 @@ bool analyzeTextFile(QFile& file, TextFileInfo& fileInfo)
     return true;
 }
 
+void FolderProcessor::addLanguage(Language* const language)
+{
+    languages.push_back(language);
+}
+
 void FolderProcessor::process(const QString folderPath)
 {
     emit startingProcessing(folderPath);
@@ -49,9 +54,16 @@ void FolderProcessor::process(const QString folderPath)
         QFileInfo fileInfo = it.fileInfo();
         if (fileInfo.isFile())
         {
-            TextFileInfo tfi{folder.relativeFilePath(fileInfo.filePath()), fileInfo.suffix()};
-            // TODO: This should eventually be removed
-            info->filesByExt[tfi.ext()]++;
+            Language* language = nullptr;
+            for (Language* lang : languages)
+            {
+               if (lang->checkFile(fileInfo.fileName()))
+               {
+                   language = lang;
+               }
+            }
+            TextFileInfo tfi{folder.relativeFilePath(fileInfo.filePath()), fileInfo.suffix(), language};
+            info->filesByLanguage[language]++;
 
             // Read file
             QFile file{fileInfo.filePath()};

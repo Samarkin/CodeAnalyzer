@@ -24,7 +24,7 @@ public:
         folderPath(other.folderPath),
         textFiles(other.textFiles),
         binaryFiles(other.binaryFiles),
-        filesByExt(other.filesByExt),
+        filesByLanguage(other.filesByLanguage),
         totalLines(other.totalLines),
         filesWithEol(other.filesWithEol),
         filesWithNoEol(other.filesWithNoEol),
@@ -40,7 +40,7 @@ public:
     QVector<BinaryFileInfo> binaryFiles;
 
     // Aggregates
-    QHash<QString, int> filesByExt;
+    QHash<Language*, int> filesByLanguage;
     quint64 totalLines{0};
     quint32 filesWithEol{0};
     quint32 filesWithNoEol{0};

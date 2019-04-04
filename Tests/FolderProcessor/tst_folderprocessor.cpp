@@ -2,6 +2,7 @@
 #include <QSignalSpy>
 #include "FolderProcessor.h"
 #include "TextUtils.h"
+#include "CommonLanguage.h"
 
 class FolderProcessorTests : public QObject
 {
@@ -14,6 +15,7 @@ private slots:
     void testLines();
     void testRead();
     void testReadBinaryFile();
+    void testLanguageDetection();
 
 private:
     QDir dir{QFINDTESTDATA("TestData")};
@@ -34,6 +36,8 @@ void FolderProcessorTests::initTestCase()
 
 #define TEST_DIR(DIRNAME) \
     FolderProcessor processor;\
+    processor.addLanguage(CommonLanguage::CPlusPlus);\
+    processor.addLanguage(CommonLanguage::CSharp);\
     QSignalSpy spy{&processor, SIGNAL(doneProcessing(FolderInfo))};\
     QString dirPath = dir.filePath(DIRNAME);\
     QVERIFY(QDir(dirPath).exists());\
@@ -53,13 +57,11 @@ void FolderProcessorTests::testFileCount()
 {
     TEST_DIR("CSharp");
 
-    QCOMPARE(result->filesByExt.keys().count(), 3);
-    QVERIFY(result->filesByExt.contains("csproj"));
-    QCOMPARE(result->filesByExt.value("csproj"), 1);
-    QVERIFY(result->filesByExt.contains("cs"));
-    QCOMPARE(result->filesByExt.value("cs"), 2);
-    QVERIFY(result->filesByExt.contains("dll"));
-    QCOMPARE(result->filesByExt.value("dll"), 1);
+    QCOMPARE(result->filesByLanguage.keys().count(), 2);
+    QVERIFY(result->filesByLanguage.contains(nullptr));
+    QCOMPARE(result->filesByLanguage.value(nullptr), 2);
+    QVERIFY(result->filesByLanguage.contains(CommonLanguage::CSharp));
+    QCOMPARE(result->filesByLanguage.value(CommonLanguage::CSharp), 2);
     QCOMPARE(result->textFiles.count(), 3);
     QCOMPARE(result->binaryFiles.count(), 1);
 }
@@ -194,6 +196,32 @@ void FolderProcessorTests::testReadBinaryFile()
         QVERIFY(file.open(QFile::ReadOnly));
         QString text;
         QVERIFY(!readAllText(file, &text));
+    }
+}
+
+void FolderProcessorTests::testLanguageDetection()
+{
+    TEST_DIR(".");
+    QVERIFY(result->textFiles.count() >= 3);
+    for (TextFileInfo fileInfo : result->textFiles)
+    {
+        if (fileInfo.path().endsWith(".cs"))
+        {
+            QCOMPARE(fileInfo.language, CommonLanguage::CSharp);
+        }
+        else if (fileInfo.path().endsWith(".cpp"))
+        {
+            QCOMPARE(fileInfo.language, CommonLanguage::CPlusPlus);
+        }
+        else if (fileInfo.path().endsWith(".c"))
+        {
+            QCOMPARE(fileInfo.language, CommonLanguage::CPlusPlus);
+        }
+        else
+        {
+            QVERIFY(fileInfo.language != CommonLanguage::CSharp);
+            QVERIFY(fileInfo.language != CommonLanguage::CPlusPlus);
+        }
     }
 }
 

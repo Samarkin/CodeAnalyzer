@@ -5,6 +5,7 @@
 #include <QMessageBox>
 #include <QDragEnterEvent>
 #include <QMimeData>
+#include "CommonLanguage.h"
 
 #define CONNECT_LABEL_LINK(label) connect(label, SIGNAL(linkActivated(const QString&)), this, SLOT(linkActivated(const QString&)))
 
@@ -25,6 +26,8 @@ MainWindow::MainWindow(QWidget *parent) :
     CONNECT_LABEL_LINK(ui->label_8);
     CONNECT_LABEL_LINK(ui->label_9);
 
+    processor.addLanguage(CommonLanguage::CPlusPlus);
+    processor.addLanguage(CommonLanguage::CSharp);
     processor.moveToThread(&processingThread);
     connect(&processor, SIGNAL(doneProcessing(FolderInfo)),
             this, SLOT(updateFolderInfo(FolderInfo)));

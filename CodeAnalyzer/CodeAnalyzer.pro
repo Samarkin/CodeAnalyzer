@@ -28,7 +28,9 @@ SOURCES += \
     main.cpp \
     MainWindow.cpp \
     FolderProcessor.cpp \
-    FileListWindow.cpp
+    FileListWindow.cpp \
+    Language.cpp \
+    CommonLanguage.cpp
 
 HEADERS += \
     MainWindow.h \
@@ -36,7 +38,9 @@ HEADERS += \
     FolderInfo.h \
     FileInfo.h \
     FileListWindow.h \
-    TextUtils.h
+    TextUtils.h \
+    Language.h \
+    CommonLanguage.h
 
 FORMS += \
     MainWindow.ui \
