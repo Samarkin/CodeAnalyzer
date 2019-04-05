@@ -1,6 +1,6 @@
 #include "Language.h"
 
-bool Language::checkFile(QString filename)
+bool Language::checkFile(QString filename) const
 {
     for (const QRegExp& re : files)
     {

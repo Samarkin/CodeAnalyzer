@@ -36,7 +36,7 @@ bool analyzeTextFile(QFile& file, TextFileInfo& fileInfo)
     return true;
 }
 
-void FolderProcessor::addLanguage(Language* const language)
+void FolderProcessor::addLanguage(const Language* const language)
 {
     languages.push_back(language);
 }
@@ -54,8 +54,8 @@ void FolderProcessor::process(const QString folderPath)
         QFileInfo fileInfo = it.fileInfo();
         if (fileInfo.isFile())
         {
-            Language* language = nullptr;
-            for (Language* lang : languages)
+            const Language* language = nullptr;
+            for (const Language* lang : languages)
             {
                if (lang->checkFile(fileInfo.fileName()))
                {

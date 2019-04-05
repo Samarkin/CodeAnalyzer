@@ -10,7 +10,7 @@ class FolderProcessor : public QObject
     Q_OBJECT
 
 public:
-    void addLanguage(Language* const language);
+    void addLanguage(const Language* const language);
 
 public slots:
     void process(const QString folderPath);
@@ -20,7 +20,7 @@ signals:
     void doneProcessing(FolderInfo info);
 
 private:
-    QLinkedList<Language*> languages;
+    QLinkedList<const Language*> languages;
 };
 
 #endif // FOLDERPROCESSOR_H

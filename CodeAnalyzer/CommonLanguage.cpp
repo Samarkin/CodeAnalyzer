@@ -2,26 +2,28 @@
 
 namespace
 {
-    Language* createCpp()
+    QRegExp regexFromWildcard(const QString& wildcard)
     {
-        QRegExp cRegex{"*.c"};
-        cRegex.setPatternSyntax(QRegExp::Wildcard);
-        QRegExp cppRegex{"*.cpp"};
-        cppRegex.setPatternSyntax(QRegExp::Wildcard);
-        QRegExp hRegex{"*.h"};
-        hRegex.setPatternSyntax(QRegExp::Wildcard);
-        // TODO: Ever destroy the object?
-        return new Language{"C/C++", QList<QRegExp>{cppRegex, cRegex, hRegex}};
-    }
-
-    Language* createCSharp()
-    {
-        QRegExp csRegex{"*.cs"};
-        csRegex.setPatternSyntax(QRegExp::Wildcard);
-        // TODO: Ever destroy the object?
-        return new Language{"C#", QList<QRegExp>{csRegex}};
+        QRegExp regex{wildcard};
+        regex.setCaseSensitivity(Qt::CaseInsensitive);
+        regex.setPatternSyntax(QRegExp::Wildcard);
+        return regex;
     }
 }
 
-Language* CommonLanguage::CPlusPlus{createCpp()};
-Language* CommonLanguage::CSharp{createCSharp()};
+const Language cPlusPlus{"C/C++", QList<QRegExp>
+    {
+        regexFromWildcard("*.cpp"),
+        regexFromWildcard("*.hpp"),
+        regexFromWildcard("*.cxx"),
+        regexFromWildcard("*.c++"),
+        regexFromWildcard("*.cp"),
+        regexFromWildcard("*.cc"),
+        regexFromWildcard("*.hh"),
+        regexFromWildcard("*.c"),
+        regexFromWildcard("*.h"),
+    }};
+const Language* const CommonLanguage::CPlusPlus = &cPlusPlus;
+
+const Language cSharp{"C#", QList<QRegExp>{regexFromWildcard("*.cs")}};
+const Language* const CommonLanguage::CSharp = &cSharp;

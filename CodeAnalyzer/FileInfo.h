@@ -51,8 +51,8 @@ enum class Newlines
 struct TextFileInfo : public FileInfo
 {
     TextFileInfo() = default;
-    TextFileInfo(QString path, QString ext, Language* language) : FileInfo(path, ext), language(language) {}
-    Language* language;
+    TextFileInfo(QString path, QString ext, const Language* language) : FileInfo(path, ext), language(language) {}
+    const Language* language;
     Encoding encoding{Encoding::NoBom};
     Indentation indentation{Indentation::Unknown};
     Newlines newlines{Newlines::Unknown};

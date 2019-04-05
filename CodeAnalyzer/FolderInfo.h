@@ -40,7 +40,7 @@ public:
     QVector<BinaryFileInfo> binaryFiles;
 
     // Aggregates
-    QHash<Language*, int> filesByLanguage;
+    QHash<const Language*, int> filesByLanguage;
     quint64 totalLines{0};
     quint32 filesWithEol{0};
     quint32 filesWithNoEol{0};

@@ -7,10 +7,14 @@
 
 struct Language
 {
+    Language(QString name, const QList<QRegExp>& files) : name(name), files(files) {}
     QString name;
     QList<QRegExp> files;
 
-    bool checkFile(QString filename);
+    bool checkFile(QString filename) const;
+
+private:
+    Language(const Language&);
 };
 
 #endif // LANGUAGE_H

@@ -5,8 +5,8 @@
 
 struct CommonLanguage
 {
-    static Language* CPlusPlus;
-    static Language* CSharp;
+    static const Language* const CPlusPlus;
+    static const Language* const CSharp;
 };
 
 #endif // COMMONLANGUAGES_H
