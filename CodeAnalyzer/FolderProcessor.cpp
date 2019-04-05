@@ -45,6 +45,10 @@ bool analyzeTextFile(QFile& file, TextFileInfo& fileInfo)
     {
         fileInfo.totalLines++;
         fileInfo.trailingNewline = false;
+        if (isWhitespaceCodeUnit(unit))
+        {
+            fileInfo.linesWithTrailSpaces++;
+        }
     }
     fileInfo.newlines = windowsNewlines
         ? (unixNewlines ? Newlines::Mixed : Newlines::Windows)

@@ -230,21 +230,22 @@ void FolderProcessorTests::testWhitespaces()
 {
     TEST_DIR("Whitespaces");
 
-    QCOMPARE(result->textFiles.count(), 2);
+    QCOMPARE(result->textFiles.count(), 4);
     QCOMPARE(result->binaryFiles.count(), 0);
     for (TextFileInfo fileInfo : result->textFiles)
     {
         if (fileInfo.path().endsWith("_trailing.txt"))
         {
-            QCOMPARE(fileInfo.linesWithTrailSpaces, 4u);
+            QCOMPARE(fileInfo.totalLines, 7u);
+            QCOMPARE(fileInfo.linesWithTrailSpaces, 5u);
         }
         else
         {
             QFAIL("Unexpected filename");
         }
     }
-    QCOMPARE(result->filesWithTrailSpaces, 2u);
-    QCOMPARE(result->linesWithTrailSpaces, 8ul);
+    QCOMPARE(result->filesWithTrailSpaces, 4u);
+    QCOMPARE(result->linesWithTrailSpaces, 20ul);
 }
 
 QTEST_APPLESS_MAIN(FolderProcessorTests)

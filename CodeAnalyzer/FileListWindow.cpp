@@ -46,6 +46,17 @@ namespace
                     chars.clear();
                 }
             };
+            auto flushWhitespaces = [&whiteSpaces,&cursor,&trailing]() {
+                for (int i = 0; i < whiteSpaces.count(); i++)
+                {
+                    if (whiteSpaces.at(i) == '\t') whiteSpaces.replace(i, 0x27F6); // arrow for tab
+                    else if (whiteSpaces.at(i) == ' ') whiteSpaces.replace(i, 0xB7); // dot for space
+                    else if (whiteSpaces.at(i) == 160) whiteSpaces.replace(i, 0xBA); // circle for nbsp
+                }
+                whiteSpaces.append(QChar{});
+                cursor.insertText(QString{whiteSpaces.data()}, trailing);
+                whiteSpaces.clear();
+            };
             while (getCodePoint(file, &codePoint))
             {
                 if (!isTextCodePoint(codePoint)) return false;
@@ -59,15 +70,7 @@ namespace
                     if (codePoint == '\r' || codePoint == '\n')
                     {
                         flush();
-                        for (int i = 0; i < whiteSpaces.count(); i++)
-                        {
-                            if (whiteSpaces.at(i) == '\t') whiteSpaces.replace(i, 0x27F6); // arrow for tab
-                            else if (whiteSpaces.at(i) == ' ') whiteSpaces.replace(i, 0xB7); // dot for space
-                            else if (whiteSpaces.at(i) == 160) whiteSpaces.replace(i, 0xBA); // circle for nbsp
-                        }
-                        whiteSpaces.append(QChar{});
-                        cursor.insertText(QString{whiteSpaces.data()}, trailing);
-                        whiteSpaces.clear();
+                        flushWhitespaces();
                     }
                     else
                     {
@@ -100,6 +103,10 @@ namespace
             flush();
             if (codePoint != '\n')
             {
+                if (!whiteSpaces.empty())
+                {
+                    flushWhitespaces();
+                }
                 cursor.insertText("\nNo newline at end of file", highlighted);
             }
             return true;
