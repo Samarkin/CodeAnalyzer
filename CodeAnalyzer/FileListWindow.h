@@ -29,13 +29,23 @@ private:
     QString folderPath;
 };
 
+template<class TFileInfo>
+class FileListItem : public QStandardItem
+{
+    TFileInfo fileInfo;
+public:
+    FileListItem(TFileInfo fileInfo) : fileInfo(fileInfo) {}
+    virtual QVariant data(int role = Qt::UserRole + 1) const override;
+    virtual int type() const override { return QStandardItem::UserType; }
+};
+
 template<template<class> class TCollection, class TFileInfo, class TPredicate>
 void FileListWindow::setFileList(const TCollection<TFileInfo>& collection, TPredicate pred)
 {
     for (const TFileInfo& fileInfo : collection)
     {
         if (!pred(fileInfo)) continue;
-        auto *item = new QStandardItem{fileInfo.path()};
+        auto *item = new FileListItem<TFileInfo>{fileInfo};
         modelRoot->appendRow(item);
     }
 }

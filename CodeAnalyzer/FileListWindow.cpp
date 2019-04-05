@@ -1,9 +1,39 @@
 #include "FileListWindow.h"
 #include "ui_FileListWindow.h"
+#include "FileInfo.h"
 #include "TextUtils.h"
 #include <QStandardItemModel>
 #include <QMessageBox>
 #include <QDir>
+
+enum ItemDataRole
+{
+    LanguageRole = Qt::UserRole + 1,
+};
+
+template<>
+QVariant FileListItem<FileInfo>::data(int role) const
+{
+    if (role == Qt::DisplayRole) return fileInfo.path();
+    if (role == LanguageRole) return "Unknown";
+    else return QStandardItem::data(role);
+}
+
+template<>
+QVariant FileListItem<BinaryFileInfo>::data(int role) const
+{
+    if (role == Qt::DisplayRole) return fileInfo.path();
+    if (role == LanguageRole) return "Binary file";
+    else return QStandardItem::data(role);
+}
+
+template<>
+QVariant FileListItem<TextFileInfo>::data(int role) const
+{
+    if (role == Qt::DisplayRole) return fileInfo.path();
+    if (role == LanguageRole) return fileInfo.language ? fileInfo.language->name : "Plain text";
+    else return QStandardItem::data(role);
+}
 
 FileListWindow::FileListWindow(QString folderPath, QWidget *parent) :
     QWidget(parent),
@@ -42,6 +72,8 @@ void FileListWindow::selectionChanged(const QModelIndex& current, const QModelIn
         // Root selected
         return;
     }
+    QString language = current.data(LanguageRole).toString();
+    ui->languageValue->setText(language);
     QString fullPath = QDir{folderPath}.filePath(path);
     QFile file{fullPath};
     QTextDocument *doc = ui->textBrowser->document();
