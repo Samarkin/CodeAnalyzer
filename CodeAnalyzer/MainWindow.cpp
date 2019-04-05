@@ -128,6 +128,7 @@ void MainWindow::updateFolderInfo(FolderInfo info)
     ui->label_binaryFiles->setText(QString::number(info->binaryFiles.count()));
     ui->label_inaccessibleFiles->setText(QString::number(info->inaccessibleFiles.count()));
     ui->label_totalLines->setText(QString::number(info->totalLines));
+    ui->label_emptyLines->setText(QString::number(info->emptyLines));
     ui->label_linesWithTrailSpaces->setText(QString::number(info->linesWithTrailSpaces));
     ui->label_filesWithTrailSpaces->setText(QString::number(info->filesWithTrailSpaces));
     ui->label_filesWithEol->setText(QString::number(info->filesWithEol));

@@ -158,7 +158,10 @@ void FolderProcessorTests::testLines()
         {
             QFAIL("Unexpected filename");
         }
+
+        QCOMPARE(fileInfo.emptyLines, 1u);
     }
+    QCOMPARE(result->emptyLines, 8ul);
 }
 
 void FolderProcessorTests::testRead()
@@ -238,6 +241,7 @@ void FolderProcessorTests::testWhitespaces()
         {
             QCOMPARE(fileInfo.totalLines, 7u);
             QCOMPARE(fileInfo.linesWithTrailSpaces, 5u);
+            QCOMPARE(fileInfo.emptyLines, 2u);
         }
         else
         {
@@ -245,6 +249,7 @@ void FolderProcessorTests::testWhitespaces()
         }
     }
     QCOMPARE(result->filesWithTrailSpaces, 4u);
+    QCOMPARE(result->emptyLines, 8ul);
     QCOMPARE(result->linesWithTrailSpaces, 20ul);
 }
 

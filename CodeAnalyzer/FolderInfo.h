@@ -26,6 +26,7 @@ public:
         binaryFiles(other.binaryFiles),
         filesByLanguage(other.filesByLanguage),
         totalLines(other.totalLines),
+        emptyLines(other.emptyLines),
         linesWithTrailSpaces(other.linesWithTrailSpaces),
         filesWithTrailSpaces(other.filesWithTrailSpaces),
         filesWithEol(other.filesWithEol),
@@ -44,6 +45,7 @@ public:
     // Aggregates
     QHash<const Language*, int> filesByLanguage;
     quint64 totalLines{0};
+    quint64 emptyLines{0};
     quint64 linesWithTrailSpaces{0};
     quint32 filesWithTrailSpaces{0};
     quint32 filesWithEol{0};
