@@ -4,6 +4,7 @@
 #include "TextUtils.h"
 #include <QStandardItemModel>
 #include <QMessageBox>
+#include <QFontDatabase>
 #include <QDir>
 
 namespace
@@ -22,36 +23,46 @@ namespace
             document->clear();
             QTextCursor cursor{document};
             QTextCharFormat clear{};
+            clear.setFont(QFontDatabase::systemFont(QFontDatabase::FixedFont));
             QTextCharFormat highlighted{};
             highlighted.setForeground(QBrush{QColor{Qt::white}});
             highlighted.setBackground(QBrush{QColor{Qt::red}});
+            QTextCharFormat invisibles{};
+            invisibles.setForeground(QBrush{QColor{Qt::gray}});
 
             QVarLengthArray<QChar> chars;
             QChar codePoint{};
+#define FLUSH\
+            do {\
+                if (chars.count() > 0)\
+                {\
+                    chars.append(QChar{});\
+                    cursor.insertText(QString{chars.data()}, clear);\
+                    chars.clear();\
+                }\
+            } while (false);
             while (getCodePoint(file, &codePoint))
             {
                 if (!IS_TEXT_CODE_POINT(codePoint)) return false;
                 // TODO: Make generic (newlines vs. indentation vs. ...), incl. inverted (e.g. highlight only "\n", not "\r\n")
                 if (codePoint == '\r')
                 {
-                    if (chars.count() > 0)
-                    {
-                        chars.append(QChar{});
-                        cursor.insertText(QString{chars.data()}, clear);
-                        chars.clear();
-                    }
+                    FLUSH;
                     cursor.insertText("\\r", highlighted);
+                }
+                else if (codePoint == '\t')
+                {
+                    FLUSH;
+                    cursor.insertText("⟶", invisibles);
+                    chars.append('\t');
                 }
                 else
                 {
                     chars.append(codePoint);
                 }
             }
-            if (chars.count() > 0)
-            {
-                chars.append(QChar{});
-                cursor.insertText(QString{chars.data()}, clear);
-            }
+            FLUSH;
+#undef FLUSH
             if (codePoint != '\n')
             {
                 cursor.insertText("\nNo newline at end of file", highlighted);
