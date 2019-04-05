@@ -38,19 +38,18 @@ namespace
             QVarLengthArray<QChar> chars;
             QVarLengthArray<QChar> whiteSpaces;
             QChar codePoint{};
-#define FLUSH()\
-            do {\
-                if (!chars.empty())\
-                {\
-                    chars.append(QChar{});\
-                    cursor.insertText(QString{chars.data()}, clear);\
-                    chars.clear();\
-                }\
-            } while (false);
+            auto flush = [&chars,&cursor,&clear]() {
+                if (!chars.empty())
+                {
+                    chars.append(QChar{});
+                    cursor.insertText(QString{chars.data()}, clear);
+                    chars.clear();
+                }
+            };
             while (getCodePoint(file, &codePoint))
             {
-                if (!IS_TEXT_CODE_POINT(codePoint)) return false;
-                if (IS_WHITESPACE_CODE_POINT(codePoint))
+                if (!isTextCodePoint(codePoint)) return false;
+                if (isWhitespaceCodePoint(codePoint))
                 {
                     whiteSpaces.append(codePoint);
                     continue;
@@ -59,7 +58,7 @@ namespace
                 {
                     if (codePoint == '\r' || codePoint == '\n')
                     {
-                        FLUSH();
+                        flush();
                         for (int i = 0; i < whiteSpaces.count(); i++)
                         {
                             if (whiteSpaces.at(i) == '\t') whiteSpaces.replace(i, 0x27F6); // arrow for tab
@@ -76,7 +75,7 @@ namespace
                         {
                             if (ch == '\t')
                             {
-                                FLUSH();
+                                flush();
                                 cursor.insertText("⟶", invisibles);
                                 chars.append('\t');
                             }
@@ -90,7 +89,7 @@ namespace
                 }
                 if (codePoint == '\r')
                 {
-                    FLUSH();
+                    flush();
                     cursor.insertText("\\r", highlighted);
                 }
                 else
@@ -98,8 +97,7 @@ namespace
                     chars.append(codePoint);
                 }
             }
-            FLUSH();
-#undef FLUSH
+            flush();
             if (codePoint != '\n')
             {
                 cursor.insertText("\nNo newline at end of file", highlighted);

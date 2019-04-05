@@ -33,6 +33,8 @@ private:
     FolderProcessor processor;
     QThread processingThread;
     FolderInfo folderInfo;
+
+    void connectLinkHandler(const QObject *);
 };
 
 #endif // MAINWINDOW_H

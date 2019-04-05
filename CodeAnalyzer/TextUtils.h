@@ -4,10 +4,30 @@
 #include "FileInfo.h"
 #include <QFile>
 
-#define IS_TEXT_CODE_UNIT(unit) (unit > 31 || unit == '\r' || unit == '\n' || unit == '\t')
-#define IS_TEXT_CODE_POINT(codePoint) IS_TEXT_CODE_UNIT(codePoint) // lower code points are equal to their code units in all supported encodings
-#define IS_WHITESPACE_CODE_UNIT(unit) (unit == ' ' || unit == '\t' || unit == 0xA0) // it is a coincidence that UTF-8 representation of NBSP (0xA0) is [0xC2, 0xA0]
-#define IS_WHITESPACE_CODE_POINT(codePoint) IS_WHITESPACE_CODE_UNIT(codePoint) // lower code points are equal to their code units in all supported encodings
+template<typename codeUnit_t>
+inline bool isTextCodeUnit(codeUnit_t unit)
+{
+    return unit > 31 || unit == '\r' || unit == '\n' || unit == '\t';
+}
+
+inline bool isTextCodePoint(QChar codePoint)
+{
+    // lower code points are equal to their code units in all supported encodings
+    return isTextCodeUnit(codePoint);
+}
+
+template<typename codeUnit_t>
+inline bool isWhitespaceCodeUnit(codeUnit_t unit)
+{
+    // it is a coincidence that UTF-8 representation of NBSP (0xA0) is [0xC2, 0xA0]
+    return unit == ' ' || unit == '\t' || unit == 0xA0;
+}
+
+inline bool isWhitespaceCodePoint(QChar codePoint)
+{
+    // lower code points are equal to their code units in all supported encodings
+    return isWhitespaceCodeUnit(codePoint);
+}
 
 template<typename codeUnit_t>
 inline bool getCodeUnit(QFile& file, codeUnit_t* pUnit)
@@ -203,7 +223,7 @@ struct readAsString
         QChar codePoint{};
         while (getCodePoint(file, &codePoint))
         {
-            if (!IS_TEXT_CODE_POINT(codePoint)) return false;
+            if (!isTextCodePoint(codePoint)) return false;
             chars.append(codePoint);
         }
         chars.append(QChar{});

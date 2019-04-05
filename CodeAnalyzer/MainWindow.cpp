@@ -7,8 +7,6 @@
 #include <QMimeData>
 #include "CommonLanguage.h"
 
-#define CONNECT_LABEL_LINK(label) connect(label, SIGNAL(linkActivated(const QString&)), this, SLOT(linkActivated(const QString&)))
-
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -16,17 +14,17 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
     connect(ui->actionOpen, SIGNAL(triggered()),
             this, SLOT(openClicked()));
-    CONNECT_LABEL_LINK(ui->label);
-    CONNECT_LABEL_LINK(ui->label_2);
-    CONNECT_LABEL_LINK(ui->label_3);
-    CONNECT_LABEL_LINK(ui->label_4);
-    CONNECT_LABEL_LINK(ui->label_5);
-    CONNECT_LABEL_LINK(ui->label_6);
-    CONNECT_LABEL_LINK(ui->label_7);
-    CONNECT_LABEL_LINK(ui->label_8);
-    CONNECT_LABEL_LINK(ui->label_9);
-    CONNECT_LABEL_LINK(ui->label_10);
-    CONNECT_LABEL_LINK(ui->label_11);
+    connectLinkHandler(ui->label);
+    connectLinkHandler(ui->label_2);
+    connectLinkHandler(ui->label_3);
+    connectLinkHandler(ui->label_4);
+    connectLinkHandler(ui->label_5);
+    connectLinkHandler(ui->label_6);
+    connectLinkHandler(ui->label_7);
+    connectLinkHandler(ui->label_8);
+    connectLinkHandler(ui->label_9);
+    connectLinkHandler(ui->label_10);
+    connectLinkHandler(ui->label_11);
 
     processor.addLanguage(CommonLanguage::CPlusPlus);
     processor.addLanguage(CommonLanguage::CSharp);
@@ -38,6 +36,11 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(&processor, SIGNAL(startingProcessing(QString)),
             this, SLOT(indicateProcessing()));
     processingThread.start();
+}
+
+inline void MainWindow::connectLinkHandler(const QObject *object)
+{
+    connect(object, SIGNAL(linkActivated(const QString&)), this, SLOT(linkActivated(const QString&)));
 }
 
 void MainWindow::openClicked()

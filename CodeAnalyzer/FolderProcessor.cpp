@@ -19,7 +19,7 @@ bool analyzeTextFile(QFile& file, TextFileInfo& fileInfo)
             if (prevUnit == '\r')
             {
                 windowsNewlines = true;
-                if (IS_WHITESPACE_CODE_UNIT(prevPrevUnit))
+                if (isWhitespaceCodeUnit(prevPrevUnit))
                 {
                     fileInfo.linesWithTrailSpaces++;
                 }
@@ -27,13 +27,13 @@ bool analyzeTextFile(QFile& file, TextFileInfo& fileInfo)
             else
             {
                 unixNewlines = true;
-                if (IS_WHITESPACE_CODE_UNIT(prevUnit))
+                if (isWhitespaceCodeUnit(prevUnit))
                 {
                     fileInfo.linesWithTrailSpaces++;
                 }
             }
         }
-        if (!IS_TEXT_CODE_UNIT(unit)) return false;
+        if (!isTextCodeUnit(unit)) return false;
         prevPrevUnit = prevUnit;
         prevUnit = unit;
     }
