@@ -30,3 +30,12 @@ const Language* const CommonLanguage::CSharp = &cSharp;
 
 const Language makefile{"Makefile", QList<QRegExp>{regexFromWildcard("Makefile")}};
 const Language* const CommonLanguage::Makefile = &makefile;
+
+const Language xml{"XML", QList<QRegExp>
+    {
+        regexFromWildcard("*.xml"),
+        regexFromWildcard("*.xaml"),
+        regexFromWildcard("*.csproj"),
+        regexFromWildcard("*.vbproj"),
+    }};
+const Language* const CommonLanguage::Xml = &xml;

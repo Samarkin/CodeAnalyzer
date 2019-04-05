@@ -29,6 +29,7 @@ MainWindow::MainWindow(QWidget *parent) :
     processor.addLanguage(CommonLanguage::CPlusPlus);
     processor.addLanguage(CommonLanguage::CSharp);
     processor.addLanguage(CommonLanguage::Makefile);
+    processor.addLanguage(CommonLanguage::Xml);
     processor.moveToThread(&processingThread);
     connect(&processor, SIGNAL(doneProcessing(FolderInfo)),
             this, SLOT(updateFolderInfo(FolderInfo)));
