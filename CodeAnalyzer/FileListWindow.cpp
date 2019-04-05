@@ -154,6 +154,8 @@ FileListWindow::FileListWindow(QString folderPath, QWidget *parent) :
     auto *root = new QStandardItem{folderPath};
     model->appendRow(root);
     model->setHorizontalHeaderLabels(QStringList{tr("Filename")});
+    ui->splitter->setStretchFactor(0, 0);
+    ui->splitter->setStretchFactor(1, 1);
     ui->treeView->setModel(model);
     ui->treeView->expandAll();
     modelRoot = root;
