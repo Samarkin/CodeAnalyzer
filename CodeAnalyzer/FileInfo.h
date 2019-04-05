@@ -58,6 +58,7 @@ struct TextFileInfo : public FileInfo
     Newlines newlines{Newlines::Unknown};
     quint32 totalLines{0};
     quint32 emptyLines{0};
+    quint32 linesWithTrailSpaces{0};
     bool trailingNewline{false};
     char __padding[3];
 };

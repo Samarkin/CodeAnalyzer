@@ -1,0 +1,5 @@
+Example of a text file 
+With whitespaces at the end of some lines	
+	
+This is a whitespace too: 
+This line does not have a whitespace

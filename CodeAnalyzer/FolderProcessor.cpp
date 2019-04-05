@@ -8,6 +8,7 @@ bool analyzeTextFile(QFile& file, TextFileInfo& fileInfo)
 {
     bool unixNewlines = false;
     bool windowsNewlines = false;
+    codeUnit_t prevPrevUnit = '\0';
     codeUnit_t prevUnit = '\0';
     codeUnit_t unit;
     while (getCodeUnit(file, &unit))
@@ -15,10 +16,25 @@ bool analyzeTextFile(QFile& file, TextFileInfo& fileInfo)
         if (unit == '\n')
         {
             fileInfo.totalLines++;
-            if (prevUnit == '\r') windowsNewlines = true;
-            else unixNewlines = true;
+            if (prevUnit == '\r')
+            {
+                windowsNewlines = true;
+                if (IS_WHITESPACE_CODE_UNIT(prevPrevUnit))
+                {
+                    fileInfo.linesWithTrailSpaces++;
+                }
+            }
+            else
+            {
+                unixNewlines = true;
+                if (IS_WHITESPACE_CODE_UNIT(prevUnit))
+                {
+                    fileInfo.linesWithTrailSpaces++;
+                }
+            }
         }
         if (!IS_TEXT_CODE_UNIT(unit)) return false;
+        prevPrevUnit = prevUnit;
         prevUnit = unit;
     }
     if (unit == '\n')
@@ -101,6 +117,8 @@ void FolderProcessor::process(const QString folderPath)
             }
             info->textFiles.append(tfi);
             info->totalLines += quint64(tfi.totalLines);
+            info->linesWithTrailSpaces += quint64(tfi.linesWithTrailSpaces);
+            if (tfi.linesWithTrailSpaces > 0) info->filesWithTrailSpaces++;
             if (tfi.trailingNewline) info->filesWithEol++;
             else info->filesWithNoEol++;
             if (tfi.newlines == Newlines::Windows) info->filesWithWindowsNewlines++;

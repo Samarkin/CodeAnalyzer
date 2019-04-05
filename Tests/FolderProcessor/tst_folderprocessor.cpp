@@ -16,6 +16,7 @@ private slots:
     void testRead();
     void testReadBinaryFile();
     void testLanguageDetection();
+    void testWhitespaces();
 
 private:
     QDir dir{QFINDTESTDATA("TestData")};
@@ -223,6 +224,27 @@ void FolderProcessorTests::testLanguageDetection()
             QVERIFY(fileInfo.language != CommonLanguage::CPlusPlus);
         }
     }
+}
+
+void FolderProcessorTests::testWhitespaces()
+{
+    TEST_DIR("Whitespaces");
+
+    QCOMPARE(result->textFiles.count(), 2);
+    QCOMPARE(result->binaryFiles.count(), 0);
+    for (TextFileInfo fileInfo : result->textFiles)
+    {
+        if (fileInfo.path().endsWith("_trailing.txt"))
+        {
+            QCOMPARE(fileInfo.linesWithTrailSpaces, 4u);
+        }
+        else
+        {
+            QFAIL("Unexpected filename");
+        }
+    }
+    QCOMPARE(result->filesWithTrailSpaces, 2u);
+    QCOMPARE(result->linesWithTrailSpaces, 8ul);
 }
 
 QTEST_APPLESS_MAIN(FolderProcessorTests)
