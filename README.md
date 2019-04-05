@@ -1,6 +1,12 @@
 # Code Analyzer
 
-Can collect and display various statistics about your source code.
+Collects and displays various statistics about your source code.
+
+![Screenshot of the main window](Screenshots/MainWindow.png)
+
+Built-in file viewer automatically highlights questionable regions.
+
+![Screenshot of the file viewer](Screenshots/FileListWindow.png)
 
 ## License
 
