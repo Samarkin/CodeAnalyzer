@@ -4,11 +4,6 @@
 #include "FileInfo.h"
 #include <QFile>
 
-#ifdef QT_GUI_LIB
-#include <QTextDocument>
-#include <QTextBlock>
-#endif
-
 #define IS_TEXT_CODE_UNIT(unit) (unit > 31 || unit == '\r' || unit == '\n' || unit == '\t')
 #define IS_TEXT_CODE_POINT(codePoint) IS_TEXT_CODE_UNIT(codePoint) // lower code points are equal to their code units in all supported encodings
 
@@ -219,60 +214,5 @@ inline bool readAllText(QFile& file, QString *string)
 {
     return readAll<readAsString>(file, string);
 }
-
-#ifdef QT_GUI_LIB
-template<bool (*getCodePoint)(QFile& file, QChar* pChar)>
-struct readAsDocument
-{
-    typedef QTextDocument return_t;
-    static bool read(QFile& file, return_t* document)
-    {
-        document->clear();
-        QTextCursor cursor{document};
-        QTextCharFormat clear{};
-        QTextCharFormat highlighted{};
-        highlighted.setForeground(QBrush{QColor{Qt::white}});
-        highlighted.setBackground(QBrush{QColor{Qt::red}});
-
-        QVarLengthArray<QChar> chars;
-        QChar codePoint{};
-        while (getCodePoint(file, &codePoint))
-        {
-            if (!IS_TEXT_CODE_POINT(codePoint)) return false;
-            // TODO: Make generic (newlines vs. indentation vs. ...), incl. inverted (e.g. highlight only "\n", not "\r\n")
-            if (codePoint == '\r')
-            {
-                if (chars.count() > 0)
-                {
-                    chars.append(QChar{});
-                    cursor.insertText(QString{chars.data()}, clear);
-                    chars.clear();
-                }
-                cursor.insertText("\\r", highlighted);
-            }
-            else
-            {
-                chars.append(codePoint);
-            }
-        }
-        if (chars.count() > 0)
-        {
-            chars.append(QChar{});
-            cursor.insertText(QString{chars.data()}, clear);
-        }
-        if (codePoint != '\n')
-        {
-            cursor.insertText("\nNo newline at end of file", highlighted);
-        }
-        return true;
-    }
-};
-
-inline bool readAllText(QFile& file, QTextDocument *document)
-{
-    return readAll<readAsDocument>(file, document);
-}
-
-#endif
 
 #endif // UNICODE_H
