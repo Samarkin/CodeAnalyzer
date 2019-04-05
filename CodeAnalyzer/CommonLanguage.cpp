@@ -27,3 +27,6 @@ const Language* const CommonLanguage::CPlusPlus = &cPlusPlus;
 
 const Language cSharp{"C#", QList<QRegExp>{regexFromWildcard("*.cs")}};
 const Language* const CommonLanguage::CSharp = &cSharp;
+
+const Language makefile{"Makefile", QList<QRegExp>{regexFromWildcard("Makefile")}};
+const Language* const CommonLanguage::Makefile = &makefile;
