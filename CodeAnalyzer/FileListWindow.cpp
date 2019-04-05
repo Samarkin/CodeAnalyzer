@@ -27,14 +27,20 @@ namespace
             QTextCharFormat highlighted{};
             highlighted.setForeground(QBrush{QColor{Qt::white}});
             highlighted.setBackground(QBrush{QColor{Qt::red}});
+            QTextCharFormat trailing{};
+            trailing.setFont(QFontDatabase::systemFont(QFontDatabase::FixedFont));
+            trailing.setForeground(QBrush{QColor{Qt::gray}});
+            trailing.setBackground(QBrush{QColor{Qt::yellow}});
             QTextCharFormat invisibles{};
+            invisibles.setFont(QFontDatabase::systemFont(QFontDatabase::FixedFont));
             invisibles.setForeground(QBrush{QColor{Qt::gray}});
 
             QVarLengthArray<QChar> chars;
+            QVarLengthArray<QChar> whiteSpaces;
             QChar codePoint{};
-#define FLUSH\
+#define FLUSH()\
             do {\
-                if (chars.count() > 0)\
+                if (!chars.empty())\
                 {\
                     chars.append(QChar{});\
                     cursor.insertText(QString{chars.data()}, clear);\
@@ -44,24 +50,55 @@ namespace
             while (getCodePoint(file, &codePoint))
             {
                 if (!IS_TEXT_CODE_POINT(codePoint)) return false;
-                // TODO: Make generic (newlines vs. indentation vs. ...), incl. inverted (e.g. highlight only "\n", not "\r\n")
+                if (IS_WHITESPACE_CODE_POINT(codePoint))
+                {
+                    whiteSpaces.append(codePoint);
+                    continue;
+                }
+                if (!whiteSpaces.empty())
+                {
+                    if (codePoint == '\r' || codePoint == '\n')
+                    {
+                        FLUSH();
+                        for (int i = 0; i < whiteSpaces.count(); i++)
+                        {
+                            if (whiteSpaces.at(i) == '\t') whiteSpaces.replace(i, 0x27F6); // arrow for tab
+                            else if (whiteSpaces.at(i) == ' ') whiteSpaces.replace(i, 0xB7); // dot for space
+                            else if (whiteSpaces.at(i) == 160) whiteSpaces.replace(i, 0xBA); // circle for nbsp
+                        }
+                        whiteSpaces.append(QChar{});
+                        cursor.insertText(QString{whiteSpaces.data()}, trailing);
+                        whiteSpaces.clear();
+                    }
+                    else
+                    {
+                        for (const QChar& ch : whiteSpaces)
+                        {
+                            if (ch == '\t')
+                            {
+                                FLUSH();
+                                cursor.insertText("⟶", invisibles);
+                                chars.append('\t');
+                            }
+                            else
+                            {
+                                chars.append(ch);
+                            }
+                        }
+                    }
+                    whiteSpaces.clear();
+                }
                 if (codePoint == '\r')
                 {
-                    FLUSH;
+                    FLUSH();
                     cursor.insertText("\\r", highlighted);
-                }
-                else if (codePoint == '\t')
-                {
-                    FLUSH;
-                    cursor.insertText("⟶", invisibles);
-                    chars.append('\t');
                 }
                 else
                 {
                     chars.append(codePoint);
                 }
             }
-            FLUSH;
+            FLUSH();
 #undef FLUSH
             if (codePoint != '\n')
             {

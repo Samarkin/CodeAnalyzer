@@ -145,7 +145,7 @@
       </property>
      </widget>
     </item>
-    <item row="9" column="0">
+    <item row="10" column="0">
      <spacer name="verticalSpacer_2">
       <property name="orientation">
        <enum>Qt::Vertical</enum>
@@ -161,14 +161,14 @@
       </property>
      </spacer>
     </item>
-    <item row="10" column="0">
+    <item row="11" column="0">
      <widget class="QLabel" name="label_4">
       <property name="text">
        <string>Total lines:</string>
       </property>
      </widget>
     </item>
-    <item row="10" column="1">
+    <item row="11" column="1">
      <widget class="QLabel" name="label_totalLines">
       <property name="text">
        <string notr="true">0</string>
@@ -179,6 +179,34 @@
      <widget class="QLabel" name="label_5">
       <property name="text">
        <string>&lt;a href=&quot;filesWithEol&quot;&gt;With trailing EOL:&lt;/a&gt;</string>
+      </property>
+     </widget>
+    </item>
+    <item row="12" column="0">
+     <widget class="QLabel" name="label_10">
+      <property name="text">
+       <string>With trailing spaces:</string>
+      </property>
+     </widget>
+    </item>
+    <item row="12" column="1">
+     <widget class="QLabel" name="label_linesWithTrailSpaces">
+      <property name="text">
+       <string notr="true">0</string>
+      </property>
+     </widget>
+    </item>
+    <item row="9" column="0">
+     <widget class="QLabel" name="label_11">
+      <property name="text">
+       <string>&lt;a href=&quot;filesWithTrailSpaces&quot;&gt;With trailing spaces:&lt;/a&gt;</string>
+      </property>
+     </widget>
+    </item>
+    <item row="9" column="1">
+     <widget class="QLabel" name="label_filesWithTrailSpaces">
+      <property name="text">
+       <string notr="true">0</string>
       </property>
      </widget>
     </item>

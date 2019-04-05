@@ -7,6 +7,7 @@
 #define IS_TEXT_CODE_UNIT(unit) (unit > 31 || unit == '\r' || unit == '\n' || unit == '\t')
 #define IS_TEXT_CODE_POINT(codePoint) IS_TEXT_CODE_UNIT(codePoint) // lower code points are equal to their code units in all supported encodings
 #define IS_WHITESPACE_CODE_UNIT(unit) (unit == ' ' || unit == '\t' || unit == 0xA0) // it is a coincidence that UTF-8 representation of NBSP (0xA0) is [0xC2, 0xA0]
+#define IS_WHITESPACE_CODE_POINT(codePoint) IS_WHITESPACE_CODE_UNIT(codePoint) // lower code points are equal to their code units in all supported encodings
 
 template<typename codeUnit_t>
 inline bool getCodeUnit(QFile& file, codeUnit_t* pUnit)

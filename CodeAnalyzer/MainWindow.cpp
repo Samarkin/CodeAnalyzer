@@ -25,6 +25,8 @@ MainWindow::MainWindow(QWidget *parent) :
     CONNECT_LABEL_LINK(ui->label_7);
     CONNECT_LABEL_LINK(ui->label_8);
     CONNECT_LABEL_LINK(ui->label_9);
+    CONNECT_LABEL_LINK(ui->label_10);
+    CONNECT_LABEL_LINK(ui->label_11);
 
     processor.addLanguage(CommonLanguage::CPlusPlus);
     processor.addLanguage(CommonLanguage::CSharp);
@@ -101,6 +103,11 @@ void MainWindow::linkActivated(const QString& link)
         wnd->setFileList(folderInfo->textFiles, [](const TextFileInfo& i) { return i.newlines == Newlines::Mixed; });
         wnd->setTitle(tr("Files with mixed newlines"));
     }
+    else if (link == "filesWithTrailSpaces")
+    {
+        wnd->setFileList(folderInfo->textFiles, [](const TextFileInfo& i) { return i.linesWithTrailSpaces > 0; });
+        wnd->setTitle(tr("Files with trailing whitespaces"));
+    }
     else
     {
         qFatal("Broken link");
@@ -118,6 +125,8 @@ void MainWindow::updateFolderInfo(FolderInfo info)
     ui->label_binaryFiles->setText(QString::number(info->binaryFiles.count()));
     ui->label_inaccessibleFiles->setText(QString::number(info->inaccessibleFiles.count()));
     ui->label_totalLines->setText(QString::number(info->totalLines));
+    ui->label_linesWithTrailSpaces->setText(QString::number(info->linesWithTrailSpaces));
+    ui->label_filesWithTrailSpaces->setText(QString::number(info->filesWithTrailSpaces));
     ui->label_filesWithEol->setText(QString::number(info->filesWithEol));
     ui->label_filesWithNoEol->setText(QString::number(info->filesWithNoEol));
     ui->label_filesWithWindowsNewlines->setText(QString::number(info->filesWithWindowsNewlines));
