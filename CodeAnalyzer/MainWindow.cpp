@@ -56,6 +56,7 @@ void MainWindow::openClicked()
 void MainWindow::indicateProcessing()
 {
     ui->statusBar->showMessage(tr("Analyzing..."));
+    processingTimer.start();
 }
 
 void MainWindow::linkActivated(const QString& link)
@@ -122,6 +123,7 @@ void MainWindow::linkActivated(const QString& link)
 
 void MainWindow::updateFolderInfo(FolderInfo info)
 {
+    qint64 elapsed = processingTimer.elapsed();
     folderInfo = info;
     ui->statusBar->clearMessage();
     ui->label_textFiles->setText(QString::number(info->textFiles.count()));
@@ -136,7 +138,8 @@ void MainWindow::updateFolderInfo(FolderInfo info)
     ui->label_filesWithWindowsNewlines->setText(QString::number(info->filesWithWindowsNewlines));
     ui->label_filesWithUnixNewlines->setText(QString::number(info->filesWithUnixNewlines));
     ui->label_filesWithMixedNewlines->setText(QString::number(info->filesWithMixedNewlines));
-    ui->statusBar->showMessage(tr("%1 files analyzed").arg(info->textFiles.count() + info->binaryFiles.count() + info->inaccessibleFiles.count()));
+    int totalFiles = info->textFiles.count() + info->binaryFiles.count() + info->inaccessibleFiles.count();
+    ui->statusBar->showMessage(tr("%1 files analyzed in %2 milliseconds").arg(totalFiles).arg(elapsed));
 }
 
 MainWindow::~MainWindow()

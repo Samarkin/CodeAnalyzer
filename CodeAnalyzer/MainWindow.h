@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include <QThread>
+#include <QElapsedTimer>
 #include "FolderProcessor.h"
 
 namespace Ui {
@@ -33,6 +34,7 @@ private:
     FolderProcessor processor;
     QThread processingThread;
     FolderInfo folderInfo;
+    QElapsedTimer processingTimer;
 
     void connectLinkHandler(const QObject *);
 };
