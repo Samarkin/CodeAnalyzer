@@ -2,7 +2,7 @@
 
 bool Language::checkFile(QString filename) const
 {
-    for (const QRegExp& re : files)
+    for (QRegExp re : files)
     {
         if (re.exactMatch(filename))
         {

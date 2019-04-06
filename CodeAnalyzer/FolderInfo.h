@@ -15,27 +15,8 @@ Q_DECLARE_METATYPE(FolderInfo);
 class FolderInfoData : public QSharedData
 {
 public:
-    FolderInfoData()
-    {
-    }
-
-    FolderInfoData(const FolderInfoData& other) :
-        QSharedData(other),
-        folderPath(other.folderPath),
-        textFiles(other.textFiles),
-        binaryFiles(other.binaryFiles),
-        filesByLanguage(other.filesByLanguage),
-        totalLines(other.totalLines),
-        emptyLines(other.emptyLines),
-        linesWithTrailSpaces(other.linesWithTrailSpaces),
-        filesWithTrailSpaces(other.filesWithTrailSpaces),
-        filesWithEol(other.filesWithEol),
-        filesWithNoEol(other.filesWithNoEol),
-        filesWithWindowsNewlines(other.filesWithWindowsNewlines),
-        filesWithUnixNewlines(other.filesWithUnixNewlines),
-        filesWithMixedNewlines(other.filesWithMixedNewlines)
-    {
-    }
+    FolderInfoData() = default;
+    FolderInfoData(const FolderInfoData& other) = default;
 
     QString folderPath;
     QVector<FileInfo> inaccessibleFiles;
