@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui concurrent
+QT       += core gui
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -40,7 +40,8 @@ HEADERS += \
     FileListWindow.h \
     TextUtils.h \
     Language.h \
-    CommonLanguage.h
+    CommonLanguage.h \
+    BackgroundProcessor.h
 
 FORMS += \
     MainWindow.ui \

@@ -1,4 +1,4 @@
-QT += testlib concurrent
+QT += testlib
 QT -= gui
 
 CONFIG += testcase

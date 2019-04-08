@@ -1,7 +1,7 @@
 #include "FolderProcessor.h"
 #include "TextUtils.h"
+#include "BackgroundProcessor.h"
 #include <QDir>
-#include <QtConcurrent>
 #include <QDirIterator>
 #include <QMutex>
 
@@ -141,22 +141,19 @@ void FolderProcessor::process(const QString folderPath)
     info->folderPath = folderPath;
     QDir folder{folderPath};
     QDirIterator it{folder, QDirIterator::Subdirectories};
-    int totalFiles = 0;
-    QSemaphore filesProcessed{0};
     QMutex mutex;
+    BackgroundProcessor<QFileInfo> processor{[&](const QFileInfo& fileInfo){
+        processFile(languages, info, mutex, folder, fileInfo);
+    }};
     while (it.hasNext())
     {
         it.next();
         const QFileInfo& fileInfo = it.fileInfo();
         if (fileInfo.isFile())
         {
-            totalFiles++;
-            QtConcurrent::run([&, fileInfo](){
-                processFile(languages, info, mutex, folder, fileInfo);
-                filesProcessed.release();
-            });
+            processor.enqueue(fileInfo);
         }
     }
-    filesProcessed.acquire(totalFiles);
+    processor.wait();
     emit doneProcessing(FolderInfo{info});
 }
