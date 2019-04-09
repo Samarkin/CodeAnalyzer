@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>400</width>
-    <height>420</height>
+    <height>505</height>
    </rect>
   </property>
   <property name="acceptDrops">
@@ -33,6 +33,13 @@
         </property>
        </widget>
       </item>
+      <item row="0" column="1">
+       <widget class="QLabel" name="label_textFiles">
+        <property name="text">
+         <string notr="true">0</string>
+        </property>
+       </widget>
+      </item>
       <item row="1" column="0">
        <widget class="QLabel" name="label_2">
         <property name="text">
@@ -40,10 +47,24 @@
         </property>
        </widget>
       </item>
+      <item row="1" column="1">
+       <widget class="QLabel" name="label_binaryFiles">
+        <property name="text">
+         <string notr="true">0</string>
+        </property>
+       </widget>
+      </item>
       <item row="2" column="0">
        <widget class="QLabel" name="label_3">
         <property name="text">
          <string>&lt;a href=&quot;inaccessibleFiles&quot;&gt;Failed to open:&lt;/a&gt;</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="1">
+       <widget class="QLabel" name="label_inaccessibleFiles">
+        <property name="text">
+         <string notr="true">0</string>
         </property>
        </widget>
       </item>
@@ -63,66 +84,10 @@
         </property>
        </spacer>
       </item>
-      <item row="0" column="1">
-       <widget class="QLabel" name="label_textFiles">
-        <property name="text">
-         <string notr="true">0</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="1">
-       <widget class="QLabel" name="label_binaryFiles">
-        <property name="text">
-         <string notr="true">0</string>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="1">
-       <widget class="QLabel" name="label_inaccessibleFiles">
-        <property name="text">
-         <string notr="true">0</string>
-        </property>
-       </widget>
-      </item>
       <item row="4" column="0">
        <widget class="QLabel" name="label_5">
         <property name="text">
          <string>&lt;a href=&quot;filesWithEol&quot;&gt;With trailing EOL:&lt;/a&gt;</string>
-        </property>
-       </widget>
-      </item>
-      <item row="5" column="0">
-       <widget class="QLabel" name="label_6">
-        <property name="text">
-         <string>&lt;a href=&quot;filesWithNoEol&quot;&gt;W/o trailing EOL:&lt;/a&gt;</string>
-        </property>
-       </widget>
-      </item>
-      <item row="6" column="0">
-       <widget class="QLabel" name="label_7">
-        <property name="text">
-         <string>&lt;a href=&quot;filesWithWindowsNewlines&quot;&gt;Windows EOLs:&lt;/a&gt;</string>
-        </property>
-       </widget>
-      </item>
-      <item row="7" column="0">
-       <widget class="QLabel" name="label_8">
-        <property name="text">
-         <string>&lt;a href=&quot;filesWithUnixNewlines&quot;&gt;Unix EOLs:&lt;/a&gt;</string>
-        </property>
-       </widget>
-      </item>
-      <item row="8" column="0">
-       <widget class="QLabel" name="label_9">
-        <property name="text">
-         <string>&lt;a href=&quot;filesWithMixedNewlines&quot;&gt;Mixed EOLs:&lt;/a&gt;</string>
-        </property>
-       </widget>
-      </item>
-      <item row="9" column="0">
-       <widget class="QLabel" name="label_11">
-        <property name="text">
-         <string>&lt;a href=&quot;filesWithTrailSpaces&quot;&gt;With trailing spaces:&lt;/a&gt;</string>
         </property>
        </widget>
       </item>
@@ -133,10 +98,24 @@
         </property>
        </widget>
       </item>
+      <item row="5" column="0">
+       <widget class="QLabel" name="label_6">
+        <property name="text">
+         <string>&lt;a href=&quot;filesWithNoEol&quot;&gt;W/o trailing EOL:&lt;/a&gt;</string>
+        </property>
+       </widget>
+      </item>
       <item row="5" column="1">
        <widget class="QLabel" name="label_filesWithNoEol">
         <property name="text">
          <string notr="true">0</string>
+        </property>
+       </widget>
+      </item>
+      <item row="6" column="0">
+       <widget class="QLabel" name="label_7">
+        <property name="text">
+         <string>&lt;a href=&quot;filesWithWindowsNewlines&quot;&gt;Windows EOLs:&lt;/a&gt;</string>
         </property>
        </widget>
       </item>
@@ -147,6 +126,13 @@
         </property>
        </widget>
       </item>
+      <item row="7" column="0">
+       <widget class="QLabel" name="label_8">
+        <property name="text">
+         <string>&lt;a href=&quot;filesWithUnixNewlines&quot;&gt;Unix EOLs:&lt;/a&gt;</string>
+        </property>
+       </widget>
+      </item>
       <item row="7" column="1">
        <widget class="QLabel" name="label_filesWithUnixNewlines">
         <property name="text">
@@ -154,10 +140,24 @@
         </property>
        </widget>
       </item>
+      <item row="8" column="0">
+       <widget class="QLabel" name="label_9">
+        <property name="text">
+         <string>&lt;a href=&quot;filesWithMixedNewlines&quot;&gt;Mixed EOLs:&lt;/a&gt;</string>
+        </property>
+       </widget>
+      </item>
       <item row="8" column="1">
        <widget class="QLabel" name="label_filesWithMixedNewlines">
         <property name="text">
          <string notr="true">0</string>
+        </property>
+       </widget>
+      </item>
+      <item row="9" column="0">
+       <widget class="QLabel" name="label_11">
+        <property name="text">
+         <string>&lt;a href=&quot;filesWithTrailSpaces&quot;&gt;With trailing spaces:&lt;/a&gt;</string>
         </property>
        </widget>
       </item>
@@ -185,42 +185,100 @@
        </spacer>
       </item>
       <item row="11" column="0">
+       <widget class="QLabel" name="label_13">
+        <property name="text">
+         <string>&lt;a href=&quot;filesWithTabIndent&quot;&gt;Indented with tabs:&lt;/a&gt;</string>
+        </property>
+       </widget>
+      </item>
+      <item row="12" column="0">
+       <widget class="QLabel" name="label_14">
+        <property name="text">
+         <string>&lt;a href=&quot;filesWithSpaceIndent&quot;&gt;Indented with spaces:&lt;/a&gt;</string>
+        </property>
+       </widget>
+      </item>
+      <item row="13" column="0">
+       <widget class="QLabel" name="label_15">
+        <property name="text">
+         <string>&lt;a href=&quot;filesWithMixedIndent&quot;&gt;Mixed indentation:&lt;/a&gt;</string>
+        </property>
+       </widget>
+      </item>
+      <item row="15" column="0">
        <widget class="QLabel" name="label_4">
         <property name="text">
          <string>Total lines:</string>
         </property>
        </widget>
       </item>
-      <item row="12" column="0">
-       <widget class="QLabel" name="label_12">
-        <property name="text">
-         <string>Empty lines:</string>
-        </property>
-       </widget>
-      </item>
-      <item row="13" column="0">
-       <widget class="QLabel" name="label_10">
-        <property name="text">
-         <string>With trailing spaces:</string>
-        </property>
-       </widget>
-      </item>
-      <item row="11" column="1">
+      <item row="15" column="1">
        <widget class="QLabel" name="label_totalLines">
         <property name="text">
          <string notr="true">0</string>
         </property>
        </widget>
       </item>
-      <item row="12" column="1">
+      <item row="16" column="0">
+       <widget class="QLabel" name="label_12">
+        <property name="text">
+         <string>Empty lines:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="16" column="1">
        <widget class="QLabel" name="label_emptyLines">
         <property name="text">
          <string notr="true">0</string>
         </property>
        </widget>
       </item>
-      <item row="13" column="1">
+      <item row="17" column="0">
+       <widget class="QLabel" name="label_10">
+        <property name="text">
+         <string>With trailing spaces:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="17" column="1">
        <widget class="QLabel" name="label_linesWithTrailSpaces">
+        <property name="text">
+         <string notr="true">0</string>
+        </property>
+       </widget>
+      </item>
+      <item row="14" column="0">
+       <spacer name="verticalSpacer_3">
+        <property name="orientation">
+         <enum>Qt::Vertical</enum>
+        </property>
+        <property name="sizeType">
+         <enum>QSizePolicy::Fixed</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>20</width>
+          <height>16</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item row="11" column="1">
+       <widget class="QLabel" name="label_filesWithTabIndent">
+        <property name="text">
+         <string notr="true">0</string>
+        </property>
+       </widget>
+      </item>
+      <item row="12" column="1">
+       <widget class="QLabel" name="label_filesWithSpaceIndent">
+        <property name="text">
+         <string notr="true">0</string>
+        </property>
+       </widget>
+      </item>
+      <item row="13" column="1">
+       <widget class="QLabel" name="label_filesWithMixedIndent">
         <property name="text">
          <string notr="true">0</string>
         </property>
@@ -249,14 +307,6 @@
     <addaction name="actionOpen"/>
    </widget>
    <addaction name="menuFile"/>
-  </widget>
-  <widget class="QToolBar" name="mainToolBar">
-   <attribute name="toolBarArea">
-    <enum>TopToolBarArea</enum>
-   </attribute>
-   <attribute name="toolBarBreak">
-    <bool>false</bool>
-   </attribute>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <action name="actionOpen">

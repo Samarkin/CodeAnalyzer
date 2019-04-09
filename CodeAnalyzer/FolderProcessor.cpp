@@ -10,7 +10,11 @@ bool analyzeTextFile(QFile& file, TextFileInfo& fileInfo)
 {
     bool unixNewlines = false;
     bool windowsNewlines = false;
+    bool fileHasSpaceIndent = false;
+    bool fileHasTabIndent = false;
     bool lineHasText = false;
+    bool lineHasSpaceIndent = false;
+    bool lineHasTabIndent = false;
     codeUnit_t prevPrevUnit = '\0';
     codeUnit_t prevUnit = '\0';
     codeUnit_t unit;
@@ -19,8 +23,20 @@ bool analyzeTextFile(QFile& file, TextFileInfo& fileInfo)
         if (unit == '\n')
         {
             fileInfo.totalLines++;
-            if (!lineHasText) fileInfo.emptyLines++;
-            else lineHasText = false;
+            if (!lineHasText)
+            {
+                fileInfo.emptyLines++;
+                lineHasTabIndent = false;
+                lineHasSpaceIndent = false;
+            }
+            else
+            {
+                lineHasText = false;
+                fileHasTabIndent |= lineHasTabIndent;
+                fileHasSpaceIndent |= lineHasSpaceIndent;
+                lineHasTabIndent = false;
+                lineHasSpaceIndent = false;
+            }
             if (prevUnit == '\r')
             {
                 windowsNewlines = true;
@@ -38,7 +54,15 @@ bool analyzeTextFile(QFile& file, TextFileInfo& fileInfo)
                 }
             }
         }
-        else if (!isWhitespaceCodeUnit(unit) && unit != '\r')
+        else if (isWhitespaceCodeUnit(unit))
+        {
+            if (!lineHasText)
+            {
+                if (unit == ' ') lineHasSpaceIndent = true;
+                if (unit == '\t') lineHasTabIndent = true;
+            }
+        }
+        else if (unit != '\r')
         {
             lineHasText = true;
         }
@@ -63,6 +87,9 @@ bool analyzeTextFile(QFile& file, TextFileInfo& fileInfo)
     fileInfo.newlines = windowsNewlines
         ? (unixNewlines ? Newlines::Mixed : Newlines::Windows)
         : (unixNewlines ? Newlines::Unix : Newlines::Unknown);
+    fileInfo.indentation = fileHasSpaceIndent
+        ? (fileHasTabIndent ? Indentation::Mixed : Indentation::Spaces)
+        : (fileHasTabIndent ? Indentation::Tabs : Indentation::Unknown);
     return true;
 }
 
@@ -127,6 +154,9 @@ void processFile(const Collection<const Language*>& languages, FolderInfoData* i
     if (tfi.newlines == Newlines::Windows) info->filesWithWindowsNewlines++;
     else if (tfi.newlines == Newlines::Unix) info->filesWithUnixNewlines++;
     else if (tfi.newlines == Newlines::Mixed) info->filesWithMixedNewlines++;
+    if (tfi.indentation == Indentation::Tabs) info->filesWithTabIndent++;
+    else if (tfi.indentation == Indentation::Spaces) info->filesWithSpaceIndent++;
+    else if (tfi.indentation == Indentation::Mixed) info->filesWithMixedIndent++;
 }
 
 void FolderProcessor::addLanguage(const Language* const language)

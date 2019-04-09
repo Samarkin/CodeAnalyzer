@@ -12,6 +12,8 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    resize(width(), minimumSizeHint().height());
+
     connect(ui->actionOpen, SIGNAL(triggered()),
             this, SLOT(openClicked()));
     connectLinkHandler(ui->label);
@@ -25,6 +27,10 @@ MainWindow::MainWindow(QWidget *parent) :
     connectLinkHandler(ui->label_9);
     connectLinkHandler(ui->label_10);
     connectLinkHandler(ui->label_11);
+    connectLinkHandler(ui->label_12);
+    connectLinkHandler(ui->label_13);
+    connectLinkHandler(ui->label_14);
+    connectLinkHandler(ui->label_15);
 
     processor.addLanguages(CommonLanguage::All);
     processor.moveToThread(&processingThread);
@@ -109,6 +115,21 @@ void MainWindow::linkActivated(const QString& link)
         wnd->setFileList(folderInfo->textFiles, [](const TextFileInfo& i) { return i.linesWithTrailSpaces > 0; });
         wnd->setTitle(tr("Files with trailing whitespaces"));
     }
+    else if (link == "filesWithTabIndent")
+    {
+        wnd->setFileList(folderInfo->textFiles, [](const TextFileInfo& i) { return i.indentation == Indentation::Tabs; });
+        wnd->setTitle(tr("Files indented with tabs"));
+    }
+    else if (link == "filesWithSpaceIndent")
+    {
+        wnd->setFileList(folderInfo->textFiles, [](const TextFileInfo& i) { return i.indentation == Indentation::Spaces; });
+        wnd->setTitle(tr("Files indented with spaces"));
+    }
+    else if (link == "filesWithMixedIndent")
+    {
+        wnd->setFileList(folderInfo->textFiles, [](const TextFileInfo& i) { return i.indentation == Indentation::Mixed; });
+        wnd->setTitle(tr("Files with mixed indentation"));
+    }
     else if (link.startsWith("language"))
     {
         QString langName = link.mid(8);
@@ -157,6 +178,9 @@ void MainWindow::updateFolderInfo(FolderInfo info)
     ui->label_filesWithWindowsNewlines->setText(QString::number(info->filesWithWindowsNewlines));
     ui->label_filesWithUnixNewlines->setText(QString::number(info->filesWithUnixNewlines));
     ui->label_filesWithMixedNewlines->setText(QString::number(info->filesWithMixedNewlines));
+    ui->label_filesWithTabIndent->setText(QString::number(info->filesWithTabIndent));
+    ui->label_filesWithSpaceIndent->setText(QString::number(info->filesWithSpaceIndent));
+    ui->label_filesWithMixedIndent->setText(QString::number(info->filesWithMixedIndent));
     int totalFiles = info->textFiles.count() + info->binaryFiles.count() + info->inaccessibleFiles.count();
     ui->statusBar->showMessage(tr("%1 files analyzed in %2 milliseconds").arg(totalFiles).arg(elapsed));
 

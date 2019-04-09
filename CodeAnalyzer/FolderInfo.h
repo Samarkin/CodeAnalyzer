@@ -34,6 +34,9 @@ public:
     quint32 filesWithWindowsNewlines{0};
     quint32 filesWithUnixNewlines{0};
     quint32 filesWithMixedNewlines{0};
+    quint32 filesWithTabIndent{0};
+    quint32 filesWithSpaceIndent{0};
+    quint32 filesWithMixedIndent{0};
 };
 
 #endif // FOLDERINFO_H

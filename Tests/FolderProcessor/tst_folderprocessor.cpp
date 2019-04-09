@@ -17,6 +17,7 @@ private slots:
     void testReadBinaryFile();
     void testLanguageDetection();
     void testWhitespaces();
+    void testIndentation();
 
 private:
     QDir dir{QFINDTESTDATA("TestData")};
@@ -253,6 +254,42 @@ void FolderProcessorTests::testWhitespaces()
     QCOMPARE(result->emptyLines, 8ul);
     QCOMPARE(result->linesWithTrailSpaces, 20ul);
 }
+
+void FolderProcessorTests::testIndentation()
+{
+    TEST_DIR("Indentation");
+
+    QCOMPARE(result->textFiles.count(), 5);
+    QCOMPARE(result->binaryFiles.count(), 0);
+    for (TextFileInfo fileInfo : result->textFiles)
+    {
+        QString filename = QFileInfo(fileInfo.path()).fileName();
+        if (filename.startsWith("mixed"))
+        {
+            QCOMPARE(fileInfo.indentation, Indentation::Mixed);
+        }
+        else if (filename.startsWith("tabs"))
+        {
+            QCOMPARE(fileInfo.indentation, Indentation::Tabs);
+        }
+        else if (filename.startsWith("spaces"))
+        {
+            QCOMPARE(fileInfo.indentation, Indentation::Spaces);
+        }
+        else if (filename.startsWith("unknown"))
+        {
+            QCOMPARE(fileInfo.indentation, Indentation::Unknown);
+        }
+        else
+        {
+            QFAIL("Unexpected filename");
+        }
+    }
+    QCOMPARE(result->filesWithTabIndent, 1);
+    QCOMPARE(result->filesWithSpaceIndent, 1);
+    QCOMPARE(result->filesWithMixedIndent, 2);
+}
+
 
 QTEST_APPLESS_MAIN(FolderProcessorTests)
 

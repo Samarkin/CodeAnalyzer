@@ -1,0 +1,4 @@
+<xml>
+	<statement>Some lines of this file are indented with tabs</statement>
+   <statement>The others are indented with spaces</statement>
+</xml>
