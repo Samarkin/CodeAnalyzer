@@ -166,23 +166,28 @@ void MainWindow::updateFolderInfo(FolderInfo info)
     qint64 elapsed = processingTimer.elapsed();
     folderInfo = info;
     ui->statusBar->clearMessage();
-    ui->label_textFiles->setText(QString::number(info->textFiles.count()));
-    ui->label_binaryFiles->setText(QString::number(info->binaryFiles.count()));
-    ui->label_inaccessibleFiles->setText(QString::number(info->inaccessibleFiles.count()));
-    ui->label_totalLines->setText(QString::number(info->totalLines));
-    ui->label_emptyLines->setText(QString::number(info->emptyLines));
-    ui->label_linesWithTrailSpaces->setText(QString::number(info->linesWithTrailSpaces));
-    ui->label_filesWithTrailSpaces->setText(QString::number(info->filesWithTrailSpaces));
-    ui->label_filesWithEol->setText(QString::number(info->filesWithEol));
-    ui->label_filesWithNoEol->setText(QString::number(info->filesWithNoEol));
-    ui->label_filesWithWindowsNewlines->setText(QString::number(info->filesWithWindowsNewlines));
-    ui->label_filesWithUnixNewlines->setText(QString::number(info->filesWithUnixNewlines));
-    ui->label_filesWithMixedNewlines->setText(QString::number(info->filesWithMixedNewlines));
-    ui->label_filesWithTabIndent->setText(QString::number(info->filesWithTabIndent));
-    ui->label_filesWithSpaceIndent->setText(QString::number(info->filesWithSpaceIndent));
-    ui->label_filesWithMixedIndent->setText(QString::number(info->filesWithMixedIndent));
+    QLocale systemLocale = QLocale::system();
+    ui->label_textFiles->setText(systemLocale.toString(info->textFiles.count()));
+    ui->label_binaryFiles->setText(systemLocale.toString(info->binaryFiles.count()));
+    ui->label_inaccessibleFiles->setText(systemLocale.toString(info->inaccessibleFiles.count()));
+    ui->label_totalLines->setText(systemLocale.toString(info->totalLines));
+    ui->label_emptyLines->setText(systemLocale.toString(info->emptyLines));
+    ui->label_linesWithTrailSpaces->setText(systemLocale.toString(info->linesWithTrailSpaces));
+    ui->label_filesWithTrailSpaces->setText(systemLocale.toString(info->filesWithTrailSpaces));
+    ui->label_filesWithEol->setText(systemLocale.toString(info->filesWithEol));
+    ui->label_filesWithNoEol->setText(systemLocale.toString(info->filesWithNoEol));
+    ui->label_filesWithWindowsNewlines->setText(systemLocale.toString(info->filesWithWindowsNewlines));
+    ui->label_filesWithUnixNewlines->setText(systemLocale.toString(info->filesWithUnixNewlines));
+    ui->label_filesWithMixedNewlines->setText(systemLocale.toString(info->filesWithMixedNewlines));
+    ui->label_filesWithTabIndent->setText(systemLocale.toString(info->filesWithTabIndent));
+    ui->label_filesWithSpaceIndent->setText(systemLocale.toString(info->filesWithSpaceIndent));
+    ui->label_filesWithMixedIndent->setText(systemLocale.toString(info->filesWithMixedIndent));
     int totalFiles = info->textFiles.count() + info->binaryFiles.count() + info->inaccessibleFiles.count();
-    ui->statusBar->showMessage(tr("%1 files analyzed in %2 milliseconds").arg(totalFiles).arg(elapsed));
+    ui->statusBar->showMessage(
+        tr("%1 files analyzed in %2 milliseconds")
+            .arg(systemLocale.toString(totalFiles))
+            .arg(systemLocale.toString(elapsed))
+        );
 
     int rowCount = ui->languageFormLayout->rowCount();
     for (int i = 0; i < rowCount; i++)
@@ -201,7 +206,7 @@ void MainWindow::updateFolderInfo(FolderInfo info)
                 : QString{"<a href=\"language_unknown\">%1</a>"}
                     .arg(tr("Plain text"))
         };
-        auto numLabel = new QLabel{QString::number(numOfFiles)};
+        auto numLabel = new QLabel{systemLocale.toString(numOfFiles)};
         connectLinkHandler(langNameLabel);
         ui->languageFormLayout->addRow(langNameLabel, numLabel);
     }
