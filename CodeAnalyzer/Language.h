@@ -7,9 +7,10 @@
 
 struct Language
 {
-    Language(QString name, const QList<QRegExp>& files) : name(name), files(files) {}
-    QString name;
-    QList<QRegExp> files;
+    Language(QString name, const QList<QRegExp>& files);
+    const QString name;
+    const QString urlSafeName;
+    const QList<QRegExp> files;
 
     bool checkFile(QString filename) const;
 

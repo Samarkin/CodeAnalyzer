@@ -37,8 +37,7 @@ void FolderProcessorTests::initTestCase()
 
 #define TEST_DIR(DIRNAME) \
     FolderProcessor processor;\
-    processor.addLanguage(CommonLanguage::CPlusPlus);\
-    processor.addLanguage(CommonLanguage::CSharp);\
+    processor.addLanguages(CommonLanguage::All);\
     QSignalSpy spy{&processor, SIGNAL(doneProcessing(FolderInfo))};\
     QString dirPath = dir.filePath(DIRNAME);\
     QVERIFY(QDir(dirPath).exists());\
@@ -58,11 +57,13 @@ void FolderProcessorTests::testFileCount()
 {
     TEST_DIR("CSharp");
 
-    QCOMPARE(result->filesByLanguage.keys().count(), 2);
+    QCOMPARE(result->filesByLanguage.keys().count(), 3);
     QVERIFY(result->filesByLanguage.contains(nullptr));
-    QCOMPARE(result->filesByLanguage.value(nullptr), 2);
+    QCOMPARE(result->filesByLanguage.value(nullptr), 1);
     QVERIFY(result->filesByLanguage.contains(CommonLanguage::CSharp));
     QCOMPARE(result->filesByLanguage.value(CommonLanguage::CSharp), 2);
+    QVERIFY(result->filesByLanguage.contains(CommonLanguage::Xml));
+    QCOMPARE(result->filesByLanguage.value(CommonLanguage::Xml), 1);
     QCOMPARE(result->textFiles.count(), 3);
     QCOMPARE(result->binaryFiles.count(), 1);
 }

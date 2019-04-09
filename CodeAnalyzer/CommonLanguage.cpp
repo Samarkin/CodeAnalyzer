@@ -31,11 +31,23 @@ const Language* const CommonLanguage::CSharp = &cSharp;
 const Language makefile{"Makefile", QList<QRegExp>{regexFromWildcard("Makefile")}};
 const Language* const CommonLanguage::Makefile = &makefile;
 
-const Language xml{"XML", QList<QRegExp>
+const Language javascript{"JavaScript", QList<QRegExp>
+    {
+        regexFromWildcard("*.js"),
+        regexFromWildcard("*.jsx"),
+        regexFromWildcard("*.es5"),
+        regexFromWildcard("*.es6"),
+    }};
+const Language* const CommonLanguage::JavaScript = &javascript;
+
+const Language xml{"XML/HTML", QList<QRegExp>
     {
         regexFromWildcard("*.xml"),
+        regexFromWildcard("*.html"),
         regexFromWildcard("*.xaml"),
         regexFromWildcard("*.csproj"),
         regexFromWildcard("*.vbproj"),
     }};
 const Language* const CommonLanguage::Xml = &xml;
+
+const Language* const CommonLanguage::All[] = {CSharp, CPlusPlus, Makefile, JavaScript, Xml};

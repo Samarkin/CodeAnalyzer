@@ -26,10 +26,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connectLinkHandler(ui->label_10);
     connectLinkHandler(ui->label_11);
 
-    processor.addLanguage(CommonLanguage::CPlusPlus);
-    processor.addLanguage(CommonLanguage::CSharp);
-    processor.addLanguage(CommonLanguage::Makefile);
-    processor.addLanguage(CommonLanguage::Xml);
+    processor.addLanguages(CommonLanguage::All);
     processor.moveToThread(&processingThread);
     connect(&processor, SIGNAL(doneProcessing(FolderInfo)),
             this, SLOT(updateFolderInfo(FolderInfo)));
@@ -112,6 +109,28 @@ void MainWindow::linkActivated(const QString& link)
         wnd->setFileList(folderInfo->textFiles, [](const TextFileInfo& i) { return i.linesWithTrailSpaces > 0; });
         wnd->setTitle(tr("Files with trailing whitespaces"));
     }
+    else if (link.startsWith("language"))
+    {
+        QString langName = link.mid(8);
+        const Language* language = nullptr;
+        for (auto lang : CommonLanguage::All)
+        {
+            if (lang->urlSafeName == langName)
+            {
+                language = lang;
+            }
+        }
+        if (language == nullptr)
+        {
+            wnd->setFileList(folderInfo->textFiles, [](const TextFileInfo& i) { return i.language == nullptr; });
+            wnd->setTitle(tr("Plain text"));
+        }
+        else
+        {
+            wnd->setFileList(folderInfo->textFiles, [&language](const TextFileInfo& i) { return i.language == language; });
+            wnd->setTitle(language->name);
+        }
+    }
     else
     {
         qFatal("Broken link");
@@ -140,6 +159,28 @@ void MainWindow::updateFolderInfo(FolderInfo info)
     ui->label_filesWithMixedNewlines->setText(QString::number(info->filesWithMixedNewlines));
     int totalFiles = info->textFiles.count() + info->binaryFiles.count() + info->inaccessibleFiles.count();
     ui->statusBar->showMessage(tr("%1 files analyzed in %2 milliseconds").arg(totalFiles).arg(elapsed));
+
+    int rowCount = ui->languageFormLayout->rowCount();
+    for (int i = 0; i < rowCount; i++)
+    {
+        ui->languageFormLayout->removeRow(0);
+    }
+    for (auto it = info->filesByLanguage.begin(), end = info->filesByLanguage.end(); it != end; ++it)
+    {
+        auto language = it.key();
+        auto numOfFiles = it.value();
+        auto langNameLabel = new QLabel{
+            language
+                ? QString{"<a href=\"language%2\">%1</a>"}
+                    .arg(language->name)
+                    .arg(language->urlSafeName)
+                : QString{"<a href=\"language_unknown\">%1</a>"}
+                    .arg(tr("Plain text"))
+        };
+        auto numLabel = new QLabel{QString::number(numOfFiles)};
+        connectLinkHandler(langNameLabel);
+        ui->languageFormLayout->addRow(langNameLabel, numLabel);
+    }
 }
 
 MainWindow::~MainWindow()

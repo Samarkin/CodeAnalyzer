@@ -11,6 +11,15 @@ class FolderProcessor : public QObject
 
 public:
     void addLanguage(const Language* const language);
+    template<size_t count>
+    void addLanguages(const Language* const (&languages)[count])
+    {
+        for (size_t i = 0; i < count; i++)
+        {
+            addLanguage(languages[i]);
+        }
+    }
+
 
 public slots:
     void process(const QString folderPath);
