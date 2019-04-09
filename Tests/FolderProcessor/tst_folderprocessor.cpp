@@ -285,9 +285,9 @@ void FolderProcessorTests::testIndentation()
             QFAIL("Unexpected filename");
         }
     }
-    QCOMPARE(result->filesWithTabIndent, 1);
-    QCOMPARE(result->filesWithSpaceIndent, 1);
-    QCOMPARE(result->filesWithMixedIndent, 2);
+    QCOMPARE(result->filesWithTabIndent, 1u);
+    QCOMPARE(result->filesWithSpaceIndent, 1u);
+    QCOMPARE(result->filesWithMixedIndent, 2u);
 }
 
 
