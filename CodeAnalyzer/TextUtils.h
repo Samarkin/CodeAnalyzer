@@ -177,6 +177,7 @@ inline bool getUtf16CodePoint(QFile& file, CodePoint* pChar)
     quint32 codePoint = leadingSurrogate & 0x3FF;
     codePoint <<= 10;
     codePoint |= trailingSurrogate & 0x3FF;
+    codePoint += 0x10000;
     *pChar = codePoint;
     return true;
 }
