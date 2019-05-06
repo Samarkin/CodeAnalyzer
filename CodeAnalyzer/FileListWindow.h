@@ -29,14 +29,30 @@ private:
     QString folderPath;
 };
 
+enum FileListItemDataRole
+{
+    LanguageRole = Qt::UserRole + 1,
+};
+
 template<class TFileInfo>
 class FileListItem : public QStandardItem
 {
-    TFileInfo fileInfo;
+    const TFileInfo fileInfo;
+    const QString language;
 public:
-    FileListItem(TFileInfo fileInfo) : fileInfo(fileInfo) {}
-    virtual QVariant data(int role = Qt::UserRole + 1) const override;
+    FileListItem(const TFileInfo fileInfo, const QObject& translator)
+        : fileInfo(fileInfo),
+          language(getLanguage(translator))
+    {
+    }
+    virtual QVariant data(int role = Qt::UserRole + 1) const override
+    {
+        if (role == Qt::DisplayRole) return fileInfo.path();
+        if (role == LanguageRole) return language;
+        else return QStandardItem::data(role);
+    }
     virtual int type() const override { return QStandardItem::UserType; }
+    QString getLanguage(const QObject& translator) const;
 };
 
 template<template<class> class TCollection, class TFileInfo, class TPredicate>
@@ -45,7 +61,7 @@ void FileListWindow::setFileList(const TCollection<TFileInfo>& collection, TPred
     for (const TFileInfo& fileInfo : collection)
     {
         if (!pred(fileInfo)) continue;
-        auto *item = new FileListItem<TFileInfo>{fileInfo};
+        auto *item = new FileListItem<TFileInfo>{fileInfo, *this};
         modelRoot->appendRow(item);
     }
 }

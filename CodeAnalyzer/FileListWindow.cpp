@@ -9,11 +9,6 @@
 
 namespace
 {
-    enum ItemDataRole
-    {
-        LanguageRole = Qt::UserRole + 1,
-    };
-
     template<bool (*getCodePoint)(QFile& file, QChar* pChar)>
     struct readAsDocument
     {
@@ -79,7 +74,7 @@ namespace
                             if (ch == '\t')
                             {
                                 flush();
-                                cursor.insertText("⟶", invisibles);
+                                cursor.insertText(QStringLiteral("⟶"), invisibles);
                                 chars.append('\t');
                             }
                             else
@@ -93,7 +88,7 @@ namespace
                 if (codePoint == '\r')
                 {
                     flush();
-                    cursor.insertText("\\r", highlighted);
+                    cursor.insertText(QStringLiteral("\\r"), highlighted);
                 }
                 else
                 {
@@ -107,7 +102,7 @@ namespace
                 {
                     flushWhitespaces();
                 }
-                cursor.insertText("\nNo newline at end of file", highlighted);
+                cursor.insertText(QStringLiteral("\nNo newline at end of file"), highlighted);
             }
             return true;
         }
@@ -120,27 +115,21 @@ namespace
 }
 
 template<>
-QVariant FileListItem<FileInfo>::data(int role) const
+QString FileListItem<FileInfo>::getLanguage(const QObject& translator) const
 {
-    if (role == Qt::DisplayRole) return fileInfo.path();
-    if (role == LanguageRole) return "Unknown";
-    else return QStandardItem::data(role);
+    return translator.tr("Unknown");
 }
 
 template<>
-QVariant FileListItem<BinaryFileInfo>::data(int role) const
+QString FileListItem<BinaryFileInfo>::getLanguage(const QObject& translator) const
 {
-    if (role == Qt::DisplayRole) return fileInfo.path();
-    if (role == LanguageRole) return "Binary file";
-    else return QStandardItem::data(role);
+    return translator.tr("Binary file");
 }
 
 template<>
-QVariant FileListItem<TextFileInfo>::data(int role) const
+QString FileListItem<TextFileInfo>::getLanguage(const QObject& translator) const
 {
-    if (role == Qt::DisplayRole) return fileInfo.path();
-    if (role == LanguageRole) return fileInfo.language ? fileInfo.language->name : "Plain text";
-    else return QStandardItem::data(role);
+    return fileInfo.language ? fileInfo.language->name : translator.tr("Plain text");
 }
 
 FileListWindow::FileListWindow(QString folderPath, QWidget *parent) :
@@ -182,7 +171,7 @@ void FileListWindow::selectionChanged(const QModelIndex& current, const QModelIn
         // Root selected
         return;
     }
-    QString language = current.data(LanguageRole).toString();
+    QString language = current.data(FileListItemDataRole::LanguageRole).toString();
     ui->languageValue->setText(language);
     QString fullPath = QDir{folderPath}.filePath(path);
     QFile file{fullPath};

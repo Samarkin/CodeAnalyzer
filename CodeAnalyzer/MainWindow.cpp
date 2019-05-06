@@ -200,10 +200,10 @@ void MainWindow::updateFolderInfo(FolderInfo info)
         auto numOfFiles = it.value();
         auto langNameLabel = new QLabel{
             language
-                ? QString{"<a href=\"language%2\">%1</a>"}
+                ? QStringLiteral("<a href=\"language%2\">%1</a>")
                     .arg(language->name)
                     .arg(language->urlSafeName)
-                : QString{"<a href=\"language_unknown\">%1</a>"}
+                : QStringLiteral("<a href=\"language_unknown\">%1</a>")
                     .arg(tr("Plain text"))
         };
         auto numLabel = new QLabel{systemLocale.toString(numOfFiles)};
