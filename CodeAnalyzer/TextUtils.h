@@ -3,6 +3,7 @@
 
 #include "FileInfo.h"
 #include <QFile>
+#include "CodePoint.h"
 
 template<typename codeUnit_t>
 inline bool isTextCodeUnit(codeUnit_t unit)
@@ -10,7 +11,7 @@ inline bool isTextCodeUnit(codeUnit_t unit)
     return unit > 31 || unit == '\r' || unit == '\n' || unit == '\t';
 }
 
-inline bool isTextCodePoint(QChar codePoint)
+inline bool isTextCodePoint(CodePoint codePoint)
 {
     // lower code points are equal to their code units in all supported encodings
     return isTextCodeUnit(codePoint);
@@ -23,7 +24,7 @@ inline bool isWhitespaceCodeUnit(codeUnit_t unit)
     return unit == ' ' || unit == '\t' || unit == 0xA0;
 }
 
-inline bool isWhitespaceCodePoint(QChar codePoint)
+inline bool isWhitespaceCodePoint(CodePoint codePoint)
 {
     // lower code points are equal to their code units in all supported encodings
     return isWhitespaceCodeUnit(codePoint);
@@ -101,7 +102,7 @@ inline Encoding detectEncodingAndAdvanceToFirstCodeUnit(QFile& file)
     }
 }
 
-inline bool getUtf8CodePoint(QFile& file, QChar* pChar)
+inline bool getUtf8CodePoint(QFile& file, CodePoint* pChar)
 {
     quint8 firstUnit;
     if (!getCodeUnit(file, &firstUnit)) return false;
@@ -149,7 +150,7 @@ inline bool getUtf8CodePoint(QFile& file, QChar* pChar)
 }
 
 template<bool (*getCodeUnit)(QFile&, quint16*)>
-inline bool getUtf16CodePoint(QFile& file, QChar* pChar)
+inline bool getUtf16CodePoint(QFile& file, CodePoint* pChar)
 {
     quint16 leadingSurrogate;
     if (!getCodeUnit(file, &leadingSurrogate))
@@ -181,7 +182,7 @@ inline bool getUtf16CodePoint(QFile& file, QChar* pChar)
 }
 
 template<bool (*getCodeUnit)(QFile&, quint32*)>
-inline bool getUtf32CodePoint(QFile& file, QChar* pChar)
+inline bool getUtf32CodePoint(QFile& file, CodePoint* pChar)
 {
     quint32 codePoint;
     // For UTF-32, code units == code points
@@ -193,7 +194,7 @@ inline bool getUtf32CodePoint(QFile& file, QChar* pChar)
     return true;
 }
 
-template<template<bool (*)(QFile&, QChar*)> class readAllFunc>
+template<template<bool (*)(QFile&, CodePoint*)> class readAllFunc>
 bool readAll(QFile& file, typename readAllFunc<getUtf8CodePoint>::return_t* retValue)
 {
     Encoding encoding = detectEncodingAndAdvanceToFirstCodeUnit(file);
@@ -213,18 +214,18 @@ bool readAll(QFile& file, typename readAllFunc<getUtf8CodePoint>::return_t* retV
     }
 }
 
-template<bool (*getCodePoint)(QFile&, QChar*)>
+template<bool (*getCodePoint)(QFile&, CodePoint*)>
 struct readAsString
 {
     typedef QString return_t;
     static bool read(QFile& file, return_t* string)
     {
         QVarLengthArray<QChar> chars;
-        QChar codePoint{};
+        CodePoint codePoint{};
         while (getCodePoint(file, &codePoint))
         {
             if (!isTextCodePoint(codePoint)) return false;
-            chars.append(codePoint);
+            codePoint.appendTo(chars);
         }
         chars.append(QChar{});
         *string = QString{chars.data()};

@@ -9,7 +9,7 @@
 
 namespace
 {
-    template<bool (*getCodePoint)(QFile&, QChar*)>
+    template<bool (*getCodePoint)(QFile&, CodePoint*)>
     struct readAsDocument
     {
         typedef QTextDocument return_t;
@@ -32,7 +32,7 @@ namespace
 
             QVarLengthArray<QChar> chars;
             QVarLengthArray<QChar> whiteSpaces;
-            QChar codePoint{};
+            CodePoint codePoint{};
             auto flush = [&chars,&cursor,&clear]() {
                 if (!chars.empty())
                 {
@@ -57,7 +57,7 @@ namespace
                 if (!isTextCodePoint(codePoint)) return false;
                 if (isWhitespaceCodePoint(codePoint))
                 {
-                    whiteSpaces.append(codePoint);
+                    codePoint.appendTo(whiteSpaces);
                     continue;
                 }
                 if (!whiteSpaces.empty())
@@ -92,7 +92,7 @@ namespace
                 }
                 else
                 {
-                    chars.append(codePoint);
+                    codePoint.appendTo(chars);
                 }
             }
             flush();

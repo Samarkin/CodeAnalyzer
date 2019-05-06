@@ -33,6 +33,7 @@ SOURCES += \
     CommonLanguage.cpp
 
 HEADERS += \
+    CodePoint.h \
     MainWindow.h \
     FolderProcessor.h \
     FolderInfo.h \
