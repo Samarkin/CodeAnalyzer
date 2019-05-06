@@ -37,6 +37,7 @@ private:
     QElapsedTimer processingTimer;
 
     void connectLinkHandler(const QObject *);
+    QString getEncodingName(Encoding);
 };
 
 #endif // MAINWINDOW_H

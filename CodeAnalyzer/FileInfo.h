@@ -24,13 +24,15 @@ struct BinaryFileInfo : public FileInfo
 
 enum class Encoding
 {
-    NoBom,
+    NoBom = 0,
     Utf8,
     Utf16LE,
     Utf16BE,
     Utf32LE,
     Utf32BE,
 };
+
+const int TotalNumberOfEncodings = int(Encoding::Utf32BE) + 1;
 
 enum class Indentation
 {

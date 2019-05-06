@@ -142,6 +142,7 @@ void processFile(const Collection<const Language*>& languages, FolderInfoData* i
         info->binaryFiles.append(tfi);
         return;
     }
+    info->filesByEncoding[int(tfi.encoding)]++;
     info->textFiles.append(tfi);
     info->totalLines += quint64(tfi.totalLines);
     info->emptyLines += quint64(tfi.emptyLines);

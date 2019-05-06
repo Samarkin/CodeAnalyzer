@@ -148,9 +148,19 @@ void MainWindow::linkActivated(const QString& link)
         }
         else
         {
-            wnd->setFileList(folderInfo->textFiles, [&language](const TextFileInfo& i) { return i.language == language; });
+            wnd->setFileList(folderInfo->textFiles, [language](const TextFileInfo& i) { return i.language == language; });
             wnd->setTitle(language->name);
         }
+    }
+    else if (link.startsWith("encoding"))
+    {
+        QString encodingNumber = link.mid(8);
+        bool ok;
+        int encodingInt = encodingNumber.toInt(&ok);
+        if (!ok || encodingInt < 0 || encodingInt >= TotalNumberOfEncodings) qFatal("Invalid encoding link");
+        auto encoding = Encoding(encodingInt);
+        wnd->setFileList(folderInfo->textFiles, [encoding](const TextFileInfo& i) { return i.encoding == encoding; });
+        wnd->setTitle(getEncodingName(encoding));
     }
     else
     {
@@ -209,6 +219,35 @@ void MainWindow::updateFolderInfo(FolderInfo info)
         auto numLabel = new QLabel{systemLocale.toString(numOfFiles)};
         connectLinkHandler(langNameLabel);
         ui->languageFormLayout->addRow(langNameLabel, numLabel);
+    }
+    auto spacer = new QSpacerItem(20, 16, QSizePolicy::Minimum, QSizePolicy::MinimumExpanding);
+    ui->languageFormLayout->addItem(spacer);
+    for (int i = 0; i < TotalNumberOfEncodings; i++)
+    {
+        int files = info->filesByEncoding[i];
+        if (files != 0)
+        {
+            auto encodingLabel = new QLabel{
+                QStringLiteral("<a href=\"encoding%2\">%1</a>")
+                    .arg(getEncodingName(Encoding(i)))
+                    .arg(i)
+            };
+            auto numLabel = new QLabel{systemLocale.toString(files)};
+            connectLinkHandler(encodingLabel);
+            ui->languageFormLayout->addRow(encodingLabel, numLabel);
+        }
+    }
+}
+
+QString MainWindow::getEncodingName(Encoding encoding)
+{
+    switch (encoding) {
+    case Encoding::NoBom: return tr("No BOM");
+    case Encoding::Utf8: return tr("UTF-8");
+    case Encoding::Utf16BE: return tr("UTF-16BE");
+    case Encoding::Utf16LE: return tr("UTF-16LE");
+    case Encoding::Utf32BE: return tr("UTF-32BE");
+    case Encoding::Utf32LE: return tr("UTF-32LE");
     }
 }
 

@@ -25,6 +25,7 @@ public:
 
     // Aggregates
     QHash<const Language*, int> filesByLanguage;
+    int filesByEncoding[TotalNumberOfEncodings]{0};
     quint64 totalLines{0};
     quint64 emptyLines{0};
     quint64 linesWithTrailSpaces{0};
