@@ -9,7 +9,7 @@
 
 namespace
 {
-    template<bool (*getCodePoint)(QFile& file, QChar* pChar)>
+    template<bool (*getCodePoint)(QFile&, QChar*)>
     struct readAsDocument
     {
         typedef QTextDocument return_t;

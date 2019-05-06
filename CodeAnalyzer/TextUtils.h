@@ -41,7 +41,7 @@ inline bool getCodeUnitAndSwapOctets(QFile& file, codeUnit_t* pUnit);
 template<>
 inline bool getCodeUnitAndSwapOctets(QFile& file, quint32* pUnit)
 {
-    if (file.read(reinterpret_cast<char*>(pUnit), sizeof *pUnit) < 4)
+    if (!getCodeUnit(file, pUnit))
     {
         return false;
     }
@@ -55,7 +55,7 @@ inline bool getCodeUnitAndSwapOctets(QFile& file, quint32* pUnit)
 template<>
 inline bool getCodeUnitAndSwapOctets(QFile& file, quint16* pUnit)
 {
-    if (file.read(reinterpret_cast<char*>(pUnit), sizeof *pUnit) < 2)
+    if (!getCodeUnit(file, pUnit))
     {
         return false;
     }
@@ -104,7 +104,7 @@ inline Encoding detectEncodingAndAdvanceToFirstCodeUnit(QFile& file)
 inline bool getUtf8CodePoint(QFile& file, QChar* pChar)
 {
     quint8 firstUnit;
-    if (!getCodeUnit<quint8>(file, &firstUnit)) return false;
+    if (!getCodeUnit(file, &firstUnit)) return false;
     if ((firstUnit & 0x80) == 0x00) {
         *pChar = firstUnit;
         return true;
@@ -112,7 +112,7 @@ inline bool getUtf8CodePoint(QFile& file, QChar* pChar)
     quint8 unit;
     if ((firstUnit & 0xE0) == 0xC0) {
         quint32 codePoint = firstUnit & 0x1F;
-        if (!getCodeUnit<quint8>(file, &unit)) return false;
+        if (!getCodeUnit(file, &unit)) return false;
         codePoint <<= 6;
         codePoint |= unit & 0x3F;
         *pChar = codePoint;
@@ -120,10 +120,10 @@ inline bool getUtf8CodePoint(QFile& file, QChar* pChar)
     }
     if ((firstUnit & 0xF0) == 0xE0) {
         quint32 codePoint = firstUnit & 0x0F;
-        if (!getCodeUnit<quint8>(file, &unit)) return false;
+        if (!getCodeUnit(file, &unit)) return false;
         codePoint <<= 6;
         codePoint |= unit & 0x3F;
-        if (!getCodeUnit<quint8>(file, &unit)) return false;
+        if (!getCodeUnit(file, &unit)) return false;
         codePoint <<= 6;
         codePoint |= unit & 0x3F;
         *pChar = codePoint;
@@ -131,19 +131,19 @@ inline bool getUtf8CodePoint(QFile& file, QChar* pChar)
     }
     if ((firstUnit & 0xF8) == 0xF0) {
         quint32 codePoint = firstUnit & 0x07;
-        if (!getCodeUnit<quint8>(file, &unit)) return false;
+        if (!getCodeUnit(file, &unit)) return false;
         codePoint <<= 6;
         codePoint |= unit & 0x3F;
-        if (!getCodeUnit<quint8>(file, &unit)) return false;
+        if (!getCodeUnit(file, &unit)) return false;
         codePoint <<= 6;
         codePoint |= unit & 0x3F;
-        if (!getCodeUnit<quint8>(file, &unit)) return false;
+        if (!getCodeUnit(file, &unit)) return false;
         codePoint <<= 6;
         codePoint |= unit & 0x3F;
         *pChar = codePoint;
         return true;
     }
-    // Assume 8-bit encoding
+    // Otherwise - assume 8-bit encoding
     *pChar = firstUnit;
     return true;
 }
@@ -193,7 +193,7 @@ inline bool getUtf32CodePoint(QFile& file, QChar* pChar)
     return true;
 }
 
-template<template<bool (*getCodePoint)(QFile& file, QChar* pChar)> class readAllFunc>
+template<template<bool (*)(QFile&, QChar*)> class readAllFunc>
 bool readAll(QFile& file, typename readAllFunc<getUtf8CodePoint>::return_t* retValue)
 {
     Encoding encoding = detectEncodingAndAdvanceToFirstCodeUnit(file);
@@ -213,7 +213,7 @@ bool readAll(QFile& file, typename readAllFunc<getUtf8CodePoint>::return_t* retV
     }
 }
 
-template<bool (*getCodePoint)(QFile& file, QChar* pChar)>
+template<bool (*getCodePoint)(QFile&, QChar*)>
 struct readAsString
 {
     typedef QString return_t;

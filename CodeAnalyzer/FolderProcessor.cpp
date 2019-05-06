@@ -20,22 +20,18 @@ bool analyzeTextFile(QFile& file, TextFileInfo& fileInfo)
     codeUnit_t unit;
     while (getCodeUnit(file, &unit))
     {
+        if (!isTextCodeUnit(unit)) return false;
         if (unit == '\n')
         {
             fileInfo.totalLines++;
             if (!lineHasText)
             {
                 fileInfo.emptyLines++;
-                lineHasTabIndent = false;
-                lineHasSpaceIndent = false;
             }
             else
             {
-                lineHasText = false;
                 fileHasTabIndent |= lineHasTabIndent;
                 fileHasSpaceIndent |= lineHasSpaceIndent;
-                lineHasTabIndent = false;
-                lineHasSpaceIndent = false;
             }
             if (prevUnit == '\r')
             {
@@ -53,6 +49,9 @@ bool analyzeTextFile(QFile& file, TextFileInfo& fileInfo)
                     fileInfo.linesWithTrailSpaces++;
                 }
             }
+            lineHasText = false;
+            lineHasTabIndent = false;
+            lineHasSpaceIndent = false;
         }
         else if (isWhitespaceCodeUnit(unit))
         {
@@ -66,7 +65,6 @@ bool analyzeTextFile(QFile& file, TextFileInfo& fileInfo)
         {
             lineHasText = true;
         }
-        if (!isTextCodeUnit(unit)) return false;
         prevPrevUnit = prevUnit;
         prevUnit = unit;
     }
